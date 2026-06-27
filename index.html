@@ -1998,19 +1998,45 @@ const wheatMaterial = new THREE.MeshLambertMaterial({
 // ===== WORLD TERRAIN =====
 
 for(let x=-30;x<30;x++){
+// ===== BLUE WATER LAKE =====
 
+const waterMaterial = new THREE.MeshPhongMaterial({
+    color: 0x3399ff,
+    transparent: true,
+    opacity: 0.85
+});
+
+for(let x=-8; x<8; x++){
+
+    for(let z=-8; z<8; z++){
+
+        if(x*x + z*z < 40){
+
+            const water = new THREE.Mesh(
+                new THREE.BoxGeometry(1,0.3,1),
+                waterMaterial
+            );
+
+            water.position.set(x,-1.2,z);
+
+            water.receiveShadow = true;
+
+            scene.add(water);
+        }
+    }
+}
     for(let z=-30;z<30;z++){
 
         const h = Math.floor(
             Math.sin(x*0.2)*2 +
             Math.cos(z*0.2)*2
         );
-
+const solidBlocks = [];
         const block = new THREE.Mesh(
             new THREE.BoxGeometry(1,1,1),
             grassMaterial
         );
-
+solidBlocks.push(block);
         block.position.set(x,h-1,z);
         block.castShadow = true;
         block.receiveShadow = true;
@@ -2188,7 +2214,41 @@ function createVillager(x,z){
 
     villagers.push(villager);
 }
+// ===== ANIMALS =====
 
+const animals = [];
+
+function createAnimal(x,z,color){
+
+    const animal = new THREE.Group();
+
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2,0.8,0.6),
+        new THREE.MeshLambertMaterial({
+            color: color
+        })
+    );
+
+    body.position.y = 0.8;
+    animal.add(body);
+
+    const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.5,0.5,0.5),
+        new THREE.MeshLambertMaterial({
+            color: color
+        })
+    );
+
+    head.position.set(0.8,0.9,0);
+
+    animal.add(head);
+
+    animal.position.set(x,0,z);
+
+    scene.add(animal);
+
+    animals.push(animal);
+}
 createVillager(5,5);
 createVillager(15,5);
 createVillager(10,15);
@@ -2211,7 +2271,25 @@ document.addEventListener("keyup",e=>{
 document.body.addEventListener("click",()=>{
     renderer.domElement.requestPointerLock();
 });
+function canMove(x,z){
 
+    for(const block of solidBlocks){
+
+        const dx = Math.abs(block.position.x - x);
+        const dz = Math.abs(block.position.z - z);
+
+        if(dx < 0.6 && dz < 0.6){
+
+            if(camera.position.y < block.position.y + 2){
+
+                return false;
+
+            }
+        }
+    }
+
+    return true;
+}
 let yaw = 0;
 let pitch = 0;
 
@@ -2276,7 +2354,14 @@ function animate(){
 
 
     // Villager animation
-    villagers.forEach((v,i)=>{
+   villagers.forEach((v,i)=>{
+
+    v.position.x += Math.sin(Date.now()*0.001+i)*0.01;
+    v.position.z += Math.cos(Date.now()*0.001+i)*0.01;
+
+    v.rotation.y += 0.01;
+
+});
 
         v.position.x += Math.sin(
             Date.now()*0.001 + i
