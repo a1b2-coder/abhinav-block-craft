@@ -175,7 +175,117 @@ for(let x=-25;x<25;x++){
 
     leaves2.position.set(x,3,z);
     scene.add(leaves2);
+// ===== MATERIALS =====
 
+const roadMaterial = new THREE.MeshLambertMaterial({
+    color:0x888888
+});
+
+const wheatMaterial = new THREE.MeshLambertMaterial({
+    color:0xffdd33
+});
+
+
+// ===== HOUSE =====
+
+function makeHouse(x,z){
+
+    const house = new THREE.Mesh(
+        new THREE.BoxGeometry(4,3,4),
+        trunkMaterial
+    );
+
+    house.position.set(x,1,z);
+    scene.add(house);
+
+    const roof = new THREE.Mesh(
+        new THREE.BoxGeometry(5,1,5),
+        leafMaterial
+    );
+
+    roof.position.set(x,3,z);
+    scene.add(roof);
+}
+
+
+// ===== ROAD =====
+
+function makeRoad(x1,z1,x2,z2){
+
+    const dx = x2 - x1;
+    const dz = z2 - z1;
+
+    const length = Math.sqrt(dx*dx + dz*dz);
+
+    const road = new THREE.Mesh(
+        new THREE.BoxGeometry(length,0.1,2),
+        roadMaterial
+    );
+
+    road.position.set(
+        (x1+x2)/2,
+        -0.4,
+        (z1+z2)/2
+    );
+
+    road.rotation.y = Math.atan2(dz,dx);
+
+    scene.add(road);
+}
+
+
+// ===== WHEAT FARM =====
+
+function makeFarm(x,z){
+
+    for(let i=0;i<6;i++){
+
+        for(let j=0;j<6;j++){
+
+            if(Math.random() < 0.7){
+
+                const wheat = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.2,1,0.2),
+                    wheatMaterial
+                );
+
+                wheat.position.set(
+                    x+i,
+                    0,
+                    z+j
+                );
+
+                scene.add(wheat);
+            }
+        }
+    }
+}
+
+
+// ===== VILLAGE =====
+
+makeHouse(10,10);
+makeHouse(16,10);
+
+makeHouse(10,16);
+makeHouse(16,16);
+
+makeHouse(10,22);
+makeHouse(16,22);
+
+
+// Roads
+
+makeRoad(10,10,16,10);
+makeRoad(10,16,16,16);
+makeRoad(10,22,16,22);
+
+makeRoad(13,10,13,22);
+
+
+// Farm
+
+makeFarm(20,12);
 }
     }
 }
