@@ -233,46 +233,7 @@ for(let x=-25; x<25; x++){
 
 }
 
-        if(Math.random()<0.02){
-
-            const flower = new THREE.Mesh(
-                new THREE.BoxGeometry(.2,.5,.2),
-                flowerMaterial
-            );
-
-            flower.position.set(x,-0.25,z);
-            scene.add(flower);
-        }
-
-      if(Math.random()<0.01){
-
-    // Trunk
-    const trunk = new THREE.Mesh(
-        new THREE.BoxGeometry(0.5,3,0.5),
-        trunkMaterial
-    );
-
-    trunk.position.set(x,0.5,z);
-    scene.add(trunk);
-
-    // Bottom leaves
-    const leaves1 = new THREE.Mesh(
-        new THREE.BoxGeometry(2,2,2),
-        leafMaterial
-    );
-
-    leaves1.position.set(x,2,z);
-    scene.add(leaves1);
-
-    // Top leaves
-    const leaves2 = new THREE.Mesh(
-        new THREE.BoxGeometry(1.5,1.5,1.5),
-        leafMaterial
-    );
-
-    leaves2.position.set(x,3,z);
-    scene.add(leaves2);
-      }    
+      
 // ===== MATERIALS =====
 
 const roadMaterial = new THREE.MeshLambertMaterial({
