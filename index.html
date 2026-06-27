@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Abhinav Block Craft</title>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #87CEEB;
+      font-family: Arial, sans-serif;
+    }
+
+    #menu {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      background: rgba(0,0,0,0.5);
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="menu">
+  <h2>Abhinav Block Craft</h2>
+  <p>Version 0.1</p>
+  <p>WASD = Move (coming soon)</p>
+</div>
+
+<canvas id="game"></canvas>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87CEEB);
+
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  1000
+);
+
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("game")
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+// Sun
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(10,20,10);
+scene.add(light);
+
+// Ground blocks
+const material = new THREE.MeshLambertMaterial({
+  color: 0x55aa55
+});
+
+for(let x=-20;x<20;x++){
+  for(let z=-20;z<20;z++){
+
+    const cube = new THREE.Mesh(
+      new THREE.BoxGeometry(1,1,1),
+      material
+    );
+
+    cube.position.set(x,-1,z);
+    scene.add(cube);
+  }
+}
+
+camera.position.set(0,3,5);
+
+function animate(){
+  requestAnimationFrame(animate);
+  renderer.render(scene,camera);
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
