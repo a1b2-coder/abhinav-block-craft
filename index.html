@@ -293,7 +293,17 @@ makeFarm(20,12);
 camera.position.set(0,2,5);
 
 const keys={};
+// ===== VILLAGERS =====
 
+const villagers = [];
+
+function createVillager(x, z) {
+    ...
+}
+
+createVillager(12, 12);
+createVillager(14, 18);
+createVillager(18, 14);
 document.addEventListener("keydown",e=>{
     keys[e.key.toLowerCase()]=true;
 });
