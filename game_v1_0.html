@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>ABHINAV BLOCK CRAFT v1.0 ULTIMATE</title>
+
+<style>
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:#87CEEB;
+    font-family:Arial,sans-serif;
+}
+
+canvas{
+    display:block;
+}
+
+#title{
+
+    position:absolute;
+
+    top:15px;
+    right:20px;
+
+    color:white;
+
+    font-size:28px;
+    font-weight:bold;
+
+    text-shadow:
+        0 0 10px black,
+        0 0 20px black;
+
+    z-index:100;
+}
+
+#crosshair{
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    color:white;
+
+    font-size:30px;
+
+    text-shadow:
+        0 0 10px black;
+
+    pointer-events:none;
+
+    user-select:none;
+
+    z-index:50;
+}
+
+#hotbar{
+
+    position:absolute;
+
+    bottom:20px;
+    left:50%;
+
+    transform:
+        translateX(-50%);
+
+    display:flex;
+
+    gap:8px;
+
+    z-index:100;
+}
+
+.slot{
+
+    width:50px;
+    height:50px;
+
+    border:2px solid white;
+
+    background:
+        rgba(0,0,0,.4);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+#inventory{
+
+    position:absolute;
+
+    right:20px;
+    bottom:20px;
+
+    color:white;
+
+    background:
+        rgba(0,0,0,.5);
+
+    padding:12px;
+
+    border-radius:12px;
+
+    z-index:100;
+}
+
+#serverMenu{
+
+    position:absolute;
+
+    top:20px;
+    left:20px;
+
+    color:white;
+
+    background:
+        rgba(0,0,0,.5);
+
+    padding:12px;
+
+    border-radius:12px;
+
+    z-index:100;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="title">
+ABHINAV BLOCK CRAFT
+</div>
+
+<div id="crosshair">
++
+</div>
+
+<div id="serverMenu">
+
+<b>SERVERS</b>
+
+<br>
+
+● Abhinav SMP
+
+<br>
+
+● Creative Realm
+
+<br>
+
+● Nether Kingdom
+
+<br>
+
+● End Survival
+
+</div>
+
+<div id="inventory">
+
+GRASS: 0
+
+<br>
+
+WOOD: 0
+
+<br>
+
+STONE: 0
+
+</div>
+
+<div id="hotbar">
+
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+
+</div>
+
+<canvas id="game"></canvas>
+
+<script type="module">
+
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js';
+
+
+// ======================================
+// ENGINE
+// ======================================
+
+const scene = new THREE.Scene();
+
+scene.background =
+new THREE.Color(0x87CEEB);
+
+
+const camera =
+new THREE.PerspectiveCamera(
+
+75,
+
+window.innerWidth /
+window.innerHeight,
+
+0.1,
+
+5000
+
+);
+
+
+const renderer =
+new THREE.WebGLRenderer({
+
+canvas:
+document.getElementById("game"),
+
+antialias:true
+
+});
+
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+
+// ======================================
+// ULTRA GRAPHICS
+// ======================================
+
+renderer.shadowMap.enabled = true;
+
+renderer.shadowMap.type =
+THREE.PCFSoftShadowMap;
+
+
+renderer.outputColorSpace =
+THREE.SRGBColorSpace;
+
+
+renderer.toneMapping =
+THREE.ACESFilmicToneMapping;
+
+
+renderer.toneMappingExposure = 1.2;
+
+
+// ======================================
+// LIGHTING
+// ======================================
+
+const sun =
+new THREE.DirectionalLight(
+0xffffff,
+2
+);
+
+sun.position.set(
+100,
+150,
+50
+);
+
+sun.castShadow = true;
+
+sun.shadow.mapSize.width = 4096;
+sun.shadow.mapSize.height = 4096;
+
+scene.add(sun);
+
+
+scene.add(
+
+new THREE.AmbientLight(
+0xffffff,
+0.45
+)
+
+);
+
+
+// ======================================
+// GLOBAL ARRAYS
+// ======================================
+
+const blocks = [];
+
+const animals = [];
+
+const villagers = [];
+
+const birds = [];
+
+const clouds = [];
+
+
+// ======================================
+// MATERIALS
+// ======================================
+
+const grassMat =
+new THREE.MeshLambertMaterial({
+color:0x55aa55
+});
+
+const dirtMat =
+new THREE.MeshLambertMaterial({
+color:0x8B4513
+});
+
+const stoneMat =
+new THREE.MeshLambertMaterial({
+color:0x777777
+});
+
+const woodMat =
+new THREE.MeshLambertMaterial({
+color:0x8B5A2B
+});
+
+const leafMat =
+new THREE.MeshLambertMaterial({
+color:0x228B22
+});
+
+const waterMat =
+new THREE.MeshPhongMaterial({
+
+color:0x3399ff,
+
+transparent:true,
+
+opacity:0.8
+
+});
+
+
+// NEXT PART STARTS HERE
+
+</script>
+
+</body>
+</html>
