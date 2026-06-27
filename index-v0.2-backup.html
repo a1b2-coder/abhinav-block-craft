@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Abhinav Block Craft v0.2</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    background:#87CEEB;
+    font-family:Arial,sans-serif;
+}
+
+#menu{
+    position:absolute;
+    top:10px;
+    left:10px;
+    color:white;
+    background:rgba(0,0,0,.5);
+    padding:12px;
+    border-radius:10px;
+    z-index:10;
+}
+
+#crosshair{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    color:white;
+    font-size:30px;
+    font-weight:bold;
+    pointer-events:none;
+    user-select:none;
+    text-shadow:0 0 10px black;
+}
+
+#hotbar{
+    position:absolute;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:5px;
+}
+
+.slot{
+    width:50px;
+    height:50px;
+    background:rgba(0,0,0,.5);
+    border:2px solid white;
+}
+
+canvas{
+    display:block;
+}
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+<h2>Abhinav Block Craft</h2>
+<p>WASD = Move</p>
+<p>Space = Jump</p>
+<p>Click screen = Mouse look</p>
+</div>
+
+<div id="crosshair">+</div>
+
+<div id="hotbar">
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+</div>
+
+<canvas id="game"></canvas>
+
+<script type="module">
+
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87CEEB);
+
+const camera = new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
+
+const renderer = new THREE.WebGLRenderer({
+canvas:document.getElementById("game")
+});
+
+renderer.setSize(window.innerWidth,window.innerHeight);
+
+const light = new THREE.DirectionalLight(0xffffff,1);
+light.position.set(20,30,10);
+scene.add(light);
+
+scene.add(new THREE.AmbientLight(0xffffff,0.5));
+
+const grassMaterial = new THREE.MeshLambertMaterial({
+color:0x55aa55
+});
+
+const flowerMaterial = new THREE.MeshLambertMaterial({
+color:0xff66aa
+});
+
+const trunkMaterial = new THREE.MeshLambertMaterial({
+color:0x8B4513
+});
+
+const leafMaterial = new THREE.MeshLambertMaterial({
+color:0x228B22
+});
+
+for(let x=-25;x<25;x++){
+    for(let z=-25;z<25;z++){
+
+        const block = new THREE.Mesh(
+            new THREE.BoxGeometry(1,1,1),
+            grassMaterial
+        );
+
+        block.position.set(x,-1,z);
+        scene.add(block);
+
+        if(Math.random()<0.02){
+
+            const flower = new THREE.Mesh(
+                new THREE.BoxGeometry(.2,.5,.2),
+                flowerMaterial
+            );
+
+            flower.position.set(x,-0.25,z);
+            scene.add(flower);
+        }
+
+        if(Math.random()<0.01){
+
+            const trunk = new THREE.Mesh(
+                new THREE.BoxGeometry(.4,2,.4),
+                trunkMaterial
+            );
+
+            trunk.position.set(x,0,z);
+            scene.add(trunk);
+
+            const leaves = new THREE.Mesh(
+                new THREE.BoxGeometry(1.5,1.5,1.5),
+                leafMaterial
+            );
+
+            leaves.position.set(x,1.5,z);
+            scene.add(leaves);
+        }
+    }
+}
+
+camera.position.set(0,2,5);
+
+const keys={};
+
+document.addEventListener("keydown",e=>{
+    keys[e.key.toLowerCase()]=true;
+});
+
+document.addEventListener("keyup",e=>{
+    keys[e.key.toLowerCase()]=false;
+});
+
+let velocityY=0;
+let onGround=true;
+
+document.addEventListener("keydown",e=>{
+    if(e.code==="Space" && onGround){
+        velocityY=0.15;
+        onGround=false;
+    }
+});
+
+document.body.addEventListener("click",()=>{
+    renderer.domElement.requestPointerLock();
+});
+
+let yaw=0;
+let pitch=0;
+
+document.addEventListener("mousemove",e=>{
+
+    if(document.pointerLockElement!==renderer.domElement) return;
+
+    yaw-=e.movementX*0.002;
+    pitch-=e.movementY*0.002;
+
+    pitch=Math.max(
+        -Math.PI/2,
+        Math.min(Math.PI/2,pitch)
+    );
+
+    camera.rotation.order="YXZ";
+    camera.rotation.y=yaw;
+    camera.rotation.x=pitch;
+
+});
+
+function animate(){
+
+    requestAnimationFrame(animate);
+
+    const speed=0.08;
+
+    const forward = new THREE.Vector3(
+        Math.sin(yaw),
+        0,
+        Math.cos(yaw)
+    );
+
+    const right = new THREE.Vector3(
+        Math.cos(yaw),
+        0,
+        -Math.sin(yaw)
+    );
+
+    if(keys["w"])
+        camera.position.add(forward.clone().multiplyScalar(speed));
+
+    if(keys["s"])
+        camera.position.add(forward.clone().multiplyScalar(-speed));
+
+    if(keys["a"])
+        camera.position.add(right.clone().multiplyScalar(-speed));
+
+    if(keys["d"])
+        camera.position.add(right.clone().multiplyScalar(speed));
+
+    velocityY-=0.008;
+    camera.position.y+=velocityY;
+
+    if(camera.position.y<2){
+        camera.position.y=2;
+        velocityY=0;
+        onGround=true;
+    }
+
+    renderer.render(scene,camera);
+}
+
+animate();
+
+window.addEventListener("resize",()=>{
+
+    camera.aspect=
+    window.innerWidth/window.innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+});
+
+</script>
+
+</body>
+</html>
