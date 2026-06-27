@@ -2,9 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Abhinav Block Craft v0.2</title>
+<title>Abhinav Block Craft</title>
 
 <style>
+
 body{
     margin:0;
     overflow:hidden;
@@ -16,11 +17,11 @@ body{
     position:absolute;
     top:10px;
     left:10px;
-    color:white;
     background:rgba(0,0,0,.5);
+    color:white;
     padding:12px;
     border-radius:10px;
-    z-index:10;
+    z-index:100;
 }
 
 #crosshair{
@@ -30,31 +31,13 @@ body{
     transform:translate(-50%,-50%);
     color:white;
     font-size:30px;
-    font-weight:bold;
-    pointer-events:none;
     user-select:none;
-    text-shadow:0 0 10px black;
-}
-
-#hotbar{
-    position:absolute;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    gap:5px;
-}
-
-.slot{
-    width:50px;
-    height:50px;
-    background:rgba(0,0,0,.5);
-    border:2px solid white;
 }
 
 canvas{
     display:block;
 }
+
 </style>
 </head>
 
@@ -62,980 +45,149 @@ canvas{
 
 <div id="menu">
 <h2>Abhinav Block Craft</h2>
-<p>WASD = Move</p>
-<p>Space = Jump</p>
-<p>Click screen = Mouse look</p>
+
+WASD = Move<br>
+SPACE = Jump<br>
+Click = Mouse Look
+
 </div>
 
 <div id="crosshair">+</div>
-
-<div id="hotbar">
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-</div>
 
 <canvas id="game"></canvas>
 
 <script type="module">
 
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js';
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js";
+
+
+// ===== SCENE =====
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87CEEB);
 
-const camera = new THREE.PerspectiveCamera(
-75,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
-);
 
-const renderer = new THREE.WebGLRenderer({
-canvas:document.getElementById("game")
-});
-
-renderer.setSize(window.innerWidth,window.innerHeight);
-
-const light = new THREE.DirectionalLight(0xffffff,1);
-light.position.set(20,30,10);
-scene.add(light);
-
-scene.add(new THREE.AmbientLight(0xffffff,0.5));
-
-const grassMaterial = new THREE.MeshLambertMaterial({
-color:0x55aa55
-});
-
-const flowerMaterial = new THREE.MeshLambertMaterial({
-color:0xff66aa
-});
-
-const trunkMaterial = new THREE.MeshLambertMaterial({
-color:0x8B4513
-});
-
-const leafMaterial = new THREE.MeshLambertMaterial({
-color:0x228B22
-});
-
-// ===== MOUNTAINS =====
-
-for(let x=-25; x<25; x++){
-
-    for(let z=-25; z<25; z++){
-
-        // Height of land
-        const height = Math.floor(
-
-            Math.sin(x * 0.2) * 2 +
-            Math.cos(z * 0.2) * 2
-
-        );
-
-        // Build blocks upward
-        for(let y=-1; y<=height; y++){
-
-            const block = new THREE.Mesh(
-
-                new THREE.BoxGeometry(1,1,1),
-                grassMaterial
-
-            );
-
-            block.position.set(x,y,z);
-
-            scene.add(block);
-
-        }
-
-
-        // Flowers
-        if(Math.random() < 0.01){
-
-            const flower = new THREE.Mesh(
-
-                new THREE.BoxGeometry(0.2,0.5,0.2),
-                flowerMaterial
-
-            );
-
-            flower.position.set(
-                x,
-                height + 0.3,
-                z
-            );
-
-            scene.add(flower);
-
-        }
-
-
-        // Trees
-        if(Math.random() < 0.008){
-
-            const trunk = new THREE.Mesh(
-
-                new THREE.BoxGeometry(0.6,3,0.6),
-                trunkMaterial
-
-            );
-
-            trunk.position.set(
-                x,
-                height + 1,
-                z
-            );
-
-            scene.add(trunk);
-
-
-            const leaves1 = new THREE.Mesh(
-
-                new THREE.BoxGeometry(2.5,2,2.5),
-                leafMaterial
-
-            );
-
-            leaves1.position.set(
-                x,
-                height + 3,
-                z
-            );
-
-            scene.add(leaves1);
-
-
-            const leaves2 = new THREE.Mesh(
-
-                new THREE.BoxGeometry(1.8,1.8,1.8),
-                leafMaterial
-
-            );
-
-            leaves2.position.set(
-                x,
-                height + 4.2,
-                z
-            );
-
-            scene.add(leaves2);
-
-        }
-
-    }
-
-}
-
-      
-// ===== MATERIALS =====
-
-const roadMaterial = new THREE.MeshLambertMaterial({
-    color:0x888888
-});
-
-const wheatMaterial = new THREE.MeshLambertMaterial({
-    color:0xffdd33
-});
-
-
-// ===== HOUSE =====
-
-function makeHouse(x,z){
-
-    // Main building
-    const house = new THREE.Mesh(
-        new THREE.BoxGeometry(6,4,6),
-        new THREE.MeshLambertMaterial({
-            color:0x333333
-        })
-    );
-
-    house.position.set(x,2,z);
-    scene.add(house);
-
-
-    // White frame
-    const frame = new THREE.Mesh(
-        new THREE.BoxGeometry(6.5,0.5,6.5),
-        new THREE.MeshLambertMaterial({
-            color:0xffffff
-        })
-    );
-
-    frame.position.set(x,4.3,z);
-    scene.add(frame);
-
-
-    // Glass front
-    const glass = new THREE.Mesh(
-        new THREE.BoxGeometry(4,2.5,0.1),
-        new THREE.MeshLambertMaterial({
-            color:0x88ccff,
-            transparent:true,
-            opacity:0.5
-        })
-    );
-
-    glass.position.set(x,2,z+3.05);
-    scene.add(glass);
-
-
-    // Garden
-    for(let i=-2;i<=2;i++){
-
-        const plant = new THREE.Mesh(
-            new THREE.BoxGeometry(0.2,0.5,0.2),
-            leafMaterial
-        );
-
-        plant.position.set(x+i,0.25,z+4);
-        scene.add(plant);
-    }
-}
-
-// ===== ROAD =====
-
-function makeRoad(x1,z1,x2,z2){
-
-    const dx = x2 - x1;
-    const dz = z2 - z1;
-
-    const length = Math.sqrt(dx*dx + dz*dz);
-
-    const road = new THREE.Mesh(
-        new THREE.BoxGeometry(length,0.1,2),
-        roadMaterial
-    );
-
-    road.position.set(
-        (x1+x2)/2,
-        -0.4,
-        (z1+z2)/2
-    );
-
-    road.rotation.y = Math.atan2(dz,dx);
-
-    scene.add(road);
-}
-
-
-// ===== WHEAT FARM =====
-
-function makeFarm(x,z){
-
-    for(let i=0;i<6;i++){
-
-        for(let j=0;j<6;j++){
-
-            if(Math.random() < 0.7){
-
-                const wheat = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.2,1,0.2),
-                    wheatMaterial
-                );
-
-                wheat.position.set(
-                    x+i,
-                    0,
-                    z+j
-                );
-
-                scene.add(wheat);
-            }
-        }
-    }
-}
-
-
-
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Abhinav Block Craft v0.2</title>
-
-<style>
-body{
-    margin:0;
-    overflow:hidden;
-    background:#87CEEB;
-    font-family:Arial,sans-serif;
-}
-
-#menu{
-    position:absolute;
-    top:10px;
-    left:10px;
-    color:white;
-    background:rgba(0,0,0,.5);
-    padding:12px;
-    border-radius:10px;
-    z-index:10;
-}
-
-#crosshair{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    color:white;
-    font-size:30px;
-    font-weight:bold;
-    pointer-events:none;
-    user-select:none;
-    text-shadow:0 0 10px black;
-}
-
-#hotbar{
-    position:absolute;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    gap:5px;
-}
-
-.slot{
-    width:50px;
-    height:50px;
-    background:rgba(0,0,0,.5);
-    border:2px solid white;
-}
-
-canvas{
-    display:block;
-}
-</style>
-</head>
-
-<body>
-
-<div id="menu">
-<h2>Abhinav Block Craft</h2>
-<p>WASD = Move</p>
-<p>Space = Jump</p>
-<p>Click screen = Mouse look</p>
-</div>
-
-<div id="crosshair">+</div>
-
-<div id="hotbar">
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-</div>
-
-<canvas id="game"></canvas>
-
-<script type="module">
-
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js';
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87CEEB);
+// ===== CAMERA =====
 
 const camera = new THREE.PerspectiveCamera(
-75,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
+    75,
+    window.innerWidth/window.innerHeight,
+    0.1,
+    1000
 );
 
+camera.position.set(0,5,20);
+
+
+// ===== RENDERER =====
+
 const renderer = new THREE.WebGLRenderer({
-canvas:document.getElementById("game")
+    canvas:document.getElementById("game"),
+    antialias:true
 });
 
-renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
 
-const light = new THREE.DirectionalLight(0xffffff,1);
-light.position.set(20,30,10);
-scene.add(light);
-
-scene.add(new THREE.AmbientLight(0xffffff,0.5));
-
-const grassMaterial = new THREE.MeshLambertMaterial({
-color:0x55aa55
-});
-
-const flowerMaterial = new THREE.MeshLambertMaterial({
-color:0xff66aa
-});
-
-const trunkMaterial = new THREE.MeshLambertMaterial({
-color:0x8B4513
-});
-
-const leafMaterial = new THREE.MeshLambertMaterial({
-color:0x228B22
-});
-
-// ===== MOUNTAINS =====
-
-for(let x=-25; x<25; x++){
-
-    for(let z=-25; z<25; z++){
-
-        // Height of land
-        const height = Math.floor(
-
-            Math.sin(x * 0.2) * 2 +
-            Math.cos(z * 0.2) * 2
-
-        );
-
-        // Build blocks upward
-        for(let y=-1; y<=height; y++){
-
-            const block = new THREE.Mesh(
-
-                new THREE.BoxGeometry(1,1,1),
-                grassMaterial
-
-            );
-
-            block.position.set(x,y,z);
-
-            scene.add(block);
-
-        }
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 
-        // Flowers
-        if(Math.random() < 0.01){
+// ===== LIGHTING =====
 
-            const flower = new THREE.Mesh(
+const sun = new THREE.DirectionalLight(
+    0xffffff,
+    1.5
+);
 
-                new THREE.BoxGeometry(0.2,0.5,0.2),
-                flowerMaterial
+sun.position.set(30,50,20);
 
-            );
+sun.castShadow = true;
 
-            flower.position.set(
-                x,
-                height + 0.3,
-                z
-            );
+sun.shadow.mapSize.width = 2048;
+sun.shadow.mapSize.height = 2048;
 
-            scene.add(flower);
-
-        }
+scene.add(sun);
 
 
-        // Trees
-        if(Math.random() < 0.008){
-
-            const trunk = new THREE.Mesh(
-
-                new THREE.BoxGeometry(0.6,3,0.6),
-                trunkMaterial
-
-            );
-
-            trunk.position.set(
-                x,
-                height + 1,
-                z
-            );
-
-            scene.add(trunk);
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        0.5
+    )
+);
 
 
-            const leaves1 = new THREE.Mesh(
-
-                new THREE.BoxGeometry(2.5,2,2.5),
-                leafMaterial
-
-            );
-
-            leaves1.position.set(
-                x,
-                height + 3,
-                z
-            );
-
-            scene.add(leaves1);
-
-
-            const leaves2 = new THREE.Mesh(
-
-                new THREE.BoxGeometry(1.8,1.8,1.8),
-                leafMaterial
-
-            );
-
-            leaves2.position.set(
-                x,
-                height + 4.2,
-                z
-            );
-
-            scene.add(leaves2);
-
-        }
-
-    }
-
-}
-
-      
 // ===== MATERIALS =====
 
-const roadMaterial = new THREE.MeshLambertMaterial({
-    color:0x888888
+const grassMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x55aa55
 });
 
-const wheatMaterial = new THREE.MeshLambertMaterial({
-    color:0xffdd33
+const woodMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x8B4513
+});
+
+const leafMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x228B22
+});
+
+const roadMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x666666
+});
+
+const glassMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x88ccff,
+    transparent:true,
+    opacity:0.5
+});
+
+const whiteMaterial =
+new THREE.MeshLambertMaterial({
+    color:0xffffff
+});
+
+const darkMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x333333
 });
 
 
-// ===== HOUSE =====
+// ===== WORLD =====
 
-function makeHouse(x,z){
+for(let x=-30;x<30;x++){
 
-    // Main building
-    const house = new THREE.Mesh(
-        new THREE.BoxGeometry(6,4,6),
-        new THREE.MeshLambertMaterial({
-            color:0x333333
-        })
-    );
+    for(let z=-30;z<30;z++){
 
-    house.position.set(x,2,z);
-    scene.add(house);
+        const block =
+        new THREE.Mesh(
 
+            new THREE.BoxGeometry(1,1,1),
+            grassMaterial
 
-    // White frame
-    const frame = new THREE.Mesh(
-        new THREE.BoxGeometry(6.5,0.5,6.5),
-        new THREE.MeshLambertMaterial({
-            color:0xffffff
-        })
-    );
-
-    frame.position.set(x,4.3,z);
-    scene.add(frame);
-
-
-    // Glass front
-    const glass = new THREE.Mesh(
-        new THREE.BoxGeometry(4,2.5,0.1),
-        new THREE.MeshLambertMaterial({
-            color:0x88ccff,
-            transparent:true,
-            opacity:0.5
-        })
-    );
-
-    glass.position.set(x,2,z+3.05);
-    scene.add(glass);
-
-
-    // Garden
-    for(let i=-2;i<=2;i++){
-
-        const plant = new THREE.Mesh(
-            new THREE.BoxGeometry(0.2,0.5,0.2),
-            leafMaterial
         );
 
-        plant.position.set(x+i,0.25,z+4);
-        scene.add(plant);
-    }
-}
+        block.position.set(
+            x,
+            -0.5,
+            z
+        );
 
-// ===== ROAD =====
+        block.receiveShadow = true;
 
-function makeRoad(x1,z1,x2,z2){
+        scene.add(block);
 
-    const dx = x2 - x1;
-    const dz = z2 - z1;
-
-    const length = Math.sqrt(dx*dx + dz*dz);
-
-    const road = new THREE.Mesh(
-        new THREE.BoxGeometry(length,0.1,2),
-        roadMaterial
-    );
-
-    road.position.set(
-        (x1+x2)/2,
-        -0.4,
-        (z1+z2)/2
-    );
-
-    road.rotation.y = Math.atan2(dz,dx);
-
-    scene.add(road);
-}
-
-
-// ===== WHEAT FARM =====
-
-function makeFarm(x,z){
-
-    for(let i=0;i<6;i++){
-
-        for(let j=0;j<6;j++){
-
-            if(Math.random() < 0.7){
-
-                const wheat = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.2,1,0.2),
-                    wheatMaterial
-                );
-
-                wheat.position.set(
-                    x+i,
-                    0,
-                    z+j
-                );
-
-                scene.add(wheat);
-            }
-        }
-    }
-}
-
-
-
-
-// ===== MODERN VILLAGE =====
-
-// 7 Houses
-makeHouse(0,0);
-makeHouse(10,0);
-makeHouse(20,0);
-
-makeHouse(0,12);
-makeHouse(10,12);
-makeHouse(20,12);
-
-makeHouse(10,24);
-
-
-// Roads
-makeRoad(0,0,20,0);
-makeRoad(0,12,20,12);
-makeRoad(10,0,10,24);
-
-
-// Farm
-makeFarm(25,10);
-// ===== VILLAGERS =====
-
-// ===== VILLAGERS =====
-
-const villagers = [];
-
-function createVillager(x, z) {
-
-    const villager = new THREE.Group();
-
-    // Body
-    const body = new THREE.Mesh(
-        new THREE.BoxGeometry(0.8,1.2,0.6),
-        new THREE.MeshLambertMaterial({
-            color:0x8B4513
-        })
-    );
-
-    body.position.y = 0.6;
-    villager.add(body);
-
-    // Head
-    const head = new THREE.Mesh(
-        new THREE.BoxGeometry(0.7,0.7,0.7),
-        new THREE.MeshLambertMaterial({
-            color:0xffd7b5
-        })
-    );
-
-    head.position.y = 1.5;
-    villager.add(head);
-
-    villager.position.set(x,0,z);
-
-    scene.add(villager);
-
-    villagers.push(villager);
-}
-
-
-// Create villagers
-createVillager(12,12);
-createVillager(14,18);
-createVillager(18,14);
-document.addEventListener("keydown",e=>{
-    keys[e.key.toLowerCase()]=true;
-});
-
-document.addEventListener("keyup",e=>{
-    keys[e.key.toLowerCase()]=false;
-});
-
-let velocityY=0;
-let onGround=true;
-
-document.addEventListener("keydown",e=>{
-    if(e.code==="Space" && onGround){
-        velocityY=0.15;
-        onGround=false;
-    }
-});
-
-document.body.addEventListener("click",()=>{
-    renderer.domElement.requestPointerLock();
-});
-
-let yaw=0;
-let pitch=0;
-
-document.addEventListener("mousemove",e=>{
-
-    if(document.pointerLockElement!==renderer.domElement) return;
-
-    yaw-=e.movementX*0.002;
-    pitch-=e.movementY*0.002;
-
-    pitch=Math.max(
-        -Math.PI/2,
-        Math.min(Math.PI/2,pitch)
-    );
-
-    camera.rotation.order="YXZ";
-    camera.rotation.y=yaw;
-    camera.rotation.x=pitch;
-
-});
-
-function animate(){
-
-    requestAnimationFrame(animate);
-
-    const speed=0.08;
-
-    const forward = new THREE.Vector3(
-        Math.sin(yaw),
-        0,
-        Math.cos(yaw)
-    );
-
-    const right = new THREE.Vector3(
-        Math.cos(yaw),
-        0,
-        -Math.sin(yaw)
-    );
-
-    if(keys["w"])
-        camera.position.add(forward.clone().multiplyScalar(speed));
-
-    if(keys["s"])
-        camera.position.add(forward.clone().multiplyScalar(-speed));
-
-    if(keys["a"])
-        camera.position.add(right.clone().multiplyScalar(-speed));
-
-    if(keys["d"])
-        camera.position.add(right.clone().multiplyScalar(speed));
-
-    velocityY-=0.008;
-    camera.position.y+=velocityY;
-
-    if(camera.position.y<2){
-        camera.position.y=2;
-        velocityY=0;
-        onGround=true;
     }
 
-    renderer.render(scene,camera);
 }
-
-animate();
-
-window.addEventListener("resize",()=>{
-
-    camera.aspect=
-    window.innerWidth/window.innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-
-});
-
-
-
-</body>
-</html>
-
-// ===== VILLAGERS =====
-
-// ===== VILLAGERS =====
-
-const villagers = [];
-
-function createVillager(x, z) {
-
-    const villager = new THREE.Group();
-
-    // Body
-    const body = new THREE.Mesh(
-        new THREE.BoxGeometry(0.8,1.2,0.6),
-        new THREE.MeshLambertMaterial({
-            color:0x8B4513
-        })
-    );
-
-    body.position.y = 0.6;
-    villager.add(body);
-
-    // Head
-    const head = new THREE.Mesh(
-        new THREE.BoxGeometry(0.7,0.7,0.7),
-        new THREE.MeshLambertMaterial({
-            color:0xffd7b5
-        })
-    );
-
-    head.position.y = 1.5;
-    villager.add(head);
-
-    villager.position.set(x,0,z);
-
-    scene.add(villager);
-
-    villagers.push(villager);
-}
-
-
-// Create villagers
-createVillager(12,12);
-createVillager(14,18);
-createVillager(18,14);
-document.addEventListener("keydown",e=>{
-    keys[e.key.toLowerCase()]=true;
-});
-
-document.addEventListener("keyup",e=>{
-    keys[e.key.toLowerCase()]=false;
-});
-
-let velocityY=0;
-let onGround=true;
-
-document.addEventListener("keydown",e=>{
-    if(e.code==="Space" && onGround){
-        velocityY=0.15;
-        onGround=false;
-    }
-});
-
-document.body.addEventListener("click",()=>{
-    renderer.domElement.requestPointerLock();
-});
-
-let yaw=0;
-let pitch=0;
-
-document.addEventListener("mousemove",e=>{
-
-    if(document.pointerLockElement!==renderer.domElement) return;
-
-    yaw-=e.movementX*0.002;
-    pitch-=e.movementY*0.002;
-
-    pitch=Math.max(
-        -Math.PI/2,
-        Math.min(Math.PI/2,pitch)
-    );
-
-    camera.rotation.order="YXZ";
-    camera.rotation.y=yaw;
-    camera.rotation.x=pitch;
-
-});
-
-function animate(){
-
-    requestAnimationFrame(animate);
-
-    const speed=0.08;
-
-    const forward = new THREE.Vector3(
-        Math.sin(yaw),
-        0,
-        Math.cos(yaw)
-    );
-
-    const right = new THREE.Vector3(
-        Math.cos(yaw),
-        0,
-        -Math.sin(yaw)
-    );
-
-    if(keys["w"])
-        camera.position.add(forward.clone().multiplyScalar(speed));
-
-    if(keys["s"])
-        camera.position.add(forward.clone().multiplyScalar(-speed));
-
-    if(keys["a"])
-        camera.position.add(right.clone().multiplyScalar(-speed));
-
-    if(keys["d"])
-        camera.position.add(right.clone().multiplyScalar(speed));
-
-    velocityY-=0.008;
-    camera.position.y+=velocityY;
-
-    if(camera.position.y<2){
-        camera.position.y=2;
-        velocityY=0;
-        onGround=true;
-    }
-
-    renderer.render(scene,camera);
-}
-
-animate();
-
-window.addEventListener("resize",()=>{
-
-    camera.aspect=
-    window.innerWidth/window.innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-
-});
-
-</script>
-
-</body>
-</html>
-// ===== WORLD TERRAIN DETAIL =====
+    // ===== WORLD TERRAIN DETAIL =====
 
 for(let x=-30;x<30;x++){
 for(let z=-30;z<30;z++){
@@ -1239,7 +391,7 @@ function createVillager(x,z){
 createVillager(5,5);
 createVillager(15,5);
 createVillager(10,15);
-        // ===== PLAYER =====
+    // ===== PLAYER =====
 
 const keys = {};
 
