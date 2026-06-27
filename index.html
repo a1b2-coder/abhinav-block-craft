@@ -323,15 +323,17 @@ function makeFarm(x,z){
 
 // ===== VILLAGE =====
 
-makeHouse(10,10);
-makeHouse(16,10);
+function makeHouse(x,z){
 
-makeHouse(10,16);
-makeHouse(16,16);
+    const house = new THREE.Mesh(
+        new THREE.BoxGeometry(4,3,4),
+        trunkMaterial
+    );
 
-makeHouse(10,22);
-makeHouse(16,22);
+    house.position.set(x,1,z);
+    scene.add(house);
 
+}
 
 // Roads
 
