@@ -1035,3 +1035,401 @@ window.addEventListener("resize",()=>{
 
 </body>
 </html>
+// ===== WORLD TERRAIN DETAIL =====
+
+for(let x=-30;x<30;x++){
+for(let z=-30;z<30;z++){
+
+    const h =
+    Math.floor(
+        Math.sin(x*0.2)*2 +
+        Math.cos(z*0.2)*2
+    );
+
+    const block =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(1,1,1),
+        grassMaterial
+    );
+
+    block.position.set(x,h-1,z);
+    block.castShadow = true;
+    block.receiveShadow = true;
+
+    scene.add(block);
+}
+}
+
+
+// ===== TREES =====
+
+function makeTree(x,z){
+
+    const trunk =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(1,4,1),
+        woodMaterial
+    );
+
+    trunk.position.set(x,1,z);
+    trunk.castShadow = true;
+
+    scene.add(trunk);
+
+    const leaves =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(3,3,3),
+        leafMaterial
+    );
+
+    leaves.position.set(x,4,z);
+    leaves.castShadow = true;
+
+    scene.add(leaves);
+}
+
+for(let i=0;i<20;i++){
+    makeTree(
+        Math.random()*40-20,
+        Math.random()*40-20
+    );
+}
+
+
+// ===== MODERN HOUSES (7) =====
+
+function makeHouse(x,z){
+
+    const base =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(6,4,6),
+        darkMaterial
+    );
+
+    base.position.set(x,2,z);
+    base.castShadow = true;
+    scene.add(base);
+
+    const roof =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(7,1,7),
+        whiteMaterial
+    );
+
+    roof.position.set(x,5,z);
+    roof.castShadow = true;
+    scene.add(roof);
+
+    const glass =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(4,2,0.2),
+        glassMaterial
+    );
+
+    glass.position.set(x,2,z+3);
+    scene.add(glass);
+}
+
+
+// ===== 7 HOUSES PLACEMENT =====
+
+makeHouse(0,0);
+makeHouse(10,0);
+makeHouse(20,0);
+
+makeHouse(0,10);
+makeHouse(10,10);
+makeHouse(20,10);
+
+makeHouse(10,20);
+
+
+// ===== ROADS =====
+
+function makeRoad(x1,z1,x2,z2){
+
+    const dx = x2-x1;
+    const dz = z2-z1;
+
+    const length =
+    Math.sqrt(dx*dx+dz*dz);
+
+    const road =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(length,0.2,2),
+        roadMaterial
+    );
+
+    road.position.set(
+        (x1+x2)/2,
+        -0.3,
+        (z1+z2)/2
+    );
+
+    road.rotation.y =
+    Math.atan2(dz,dx);
+
+    scene.add(road);
+}
+
+makeRoad(0,0,20,0);
+makeRoad(0,10,20,10);
+makeRoad(10,0,10,20);
+
+
+// ===== FARM =====
+
+function makeFarm(x,z){
+
+    for(let i=0;i<6;i++){
+    for(let j=0;j<6;j++){
+
+        const wheat =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(0.2,1,0.2),
+            leafMaterial
+        );
+
+        wheat.position.set(
+            x+i,
+            0,
+            z+j
+        );
+
+        scene.add(wheat);
+    }}
+}
+
+makeFarm(25,10);
+
+
+// ===== VILLAGERS ARRAY =====
+
+const villagers = [];
+
+function createVillager(x,z){
+
+    const villager =
+    new THREE.Group();
+
+    const body =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(1,1.5,1),
+        woodMaterial
+    );
+
+    const head =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(1,1,1),
+        glassMaterial
+    );
+
+    body.position.y=0.7;
+    head.position.y=2;
+
+    villager.add(body);
+    villager.add(head);
+
+    villager.position.set(x,0,z);
+
+    scene.add(villager);
+    villagers.push(villager);
+}
+
+createVillager(5,5);
+createVillager(15,5);
+createVillager(10,15);
+        // ===== PLAYER =====
+
+const keys = {};
+
+document.addEventListener("keydown",(e)=>{
+    keys[e.key.toLowerCase()] = true;
+});
+
+document.addEventListener("keyup",(e)=>{
+    keys[e.key.toLowerCase()] = false;
+});
+
+
+// ===== JUMP =====
+
+let velocityY = 0;
+let onGround = true;
+
+document.addEventListener("keydown",(e)=>{
+
+    if(e.code==="Space" && onGround){
+
+        velocityY = 0.18;
+        onGround = false;
+
+    }
+
+});
+
+
+// ===== MOUSE LOOK =====
+
+document.body.addEventListener("click",()=>{
+
+    renderer.domElement.requestPointerLock();
+
+});
+
+let yaw = 0;
+let pitch = 0;
+
+document.addEventListener("mousemove",(e)=>{
+
+    if(
+        document.pointerLockElement
+        !== renderer.domElement
+    ) return;
+
+    yaw -= e.movementX * 0.002;
+    pitch -= e.movementY * 0.002;
+
+    pitch = Math.max(
+        -Math.PI/2,
+        Math.min(Math.PI/2,pitch)
+    );
+
+    camera.rotation.order = "YXZ";
+
+    camera.rotation.y = yaw;
+    camera.rotation.x = pitch;
+
+});
+
+
+// ===== START POSITION =====
+
+camera.position.set(
+    10,
+    3,
+    30
+);
+
+
+// ===== ANIMATION =====
+
+function animate(){
+
+    requestAnimationFrame(animate);
+
+    const speed = 0.15;
+
+    const forward =
+    new THREE.Vector3(
+        Math.sin(yaw),
+        0,
+        Math.cos(yaw)
+    );
+
+    const right =
+    new THREE.Vector3(
+        Math.cos(yaw),
+        0,
+        -Math.sin(yaw)
+    );
+
+
+    if(keys["w"]){
+
+        camera.position.add(
+            forward.clone()
+            .multiplyScalar(speed)
+        );
+
+    }
+
+    if(keys["s"]){
+
+        camera.position.add(
+            forward.clone()
+            .multiplyScalar(-speed)
+        );
+
+    }
+
+    if(keys["a"]){
+
+        camera.position.add(
+            right.clone()
+            .multiplyScalar(-speed)
+        );
+
+    }
+
+    if(keys["d"]){
+
+        camera.position.add(
+            right.clone()
+            .multiplyScalar(speed)
+        );
+
+    }
+
+
+    // Gravity
+
+    velocityY -= 0.01;
+
+    camera.position.y += velocityY;
+
+
+    if(camera.position.y < 3){
+
+        camera.position.y = 3;
+        velocityY = 0;
+        onGround = true;
+
+    }
+
+
+    // Villager movement
+
+    villagers.forEach((v,i)=>{
+
+        v.position.x +=
+            Math.sin(
+                Date.now()*0.001 + i
+            ) * 0.005;
+
+        v.rotation.y += 0.01;
+
+    });
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+animate();
+
+
+// ===== RESIZE =====
+
+window.addEventListener("resize",()=>{
+
+    camera.aspect =
+        window.innerWidth /
+        window.innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+});
+
+</script>
+
+</body>
+</html>
