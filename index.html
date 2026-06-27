@@ -390,18 +390,48 @@ camera.position.set(0,2,5);
 const keys={};
 // ===== VILLAGERS =====
 
+// ===== VILLAGERS =====
+
 const villagers = [];
 
 function createVillager(x, z) {
 
     const villager = new THREE.Group();
 
-    /
+    // Body
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(0.8,1.2,0.6),
+        new THREE.MeshLambertMaterial({
+            color:0x8B4513
+        })
+    );
+
+    body.position.y = 0.6;
+    villager.add(body);
+
+    // Head
+    const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.7,0.7,0.7),
+        new THREE.MeshLambertMaterial({
+            color:0xffd7b5
+        })
+    );
+
+    head.position.y = 1.5;
+    villager.add(head);
+
+    villager.position.set(x,0,z);
+
+    scene.add(villager);
+
+    villagers.push(villager);
 }
 
-createVillager(12, 12);
-createVillager(14, 18);
-createVillager(18, 14);
+
+// Create villagers
+createVillager(12,12);
+createVillager(14,18);
+createVillager(18,14);
 document.addEventListener("keydown",e=>{
     keys[e.key.toLowerCase()]=true;
 });
