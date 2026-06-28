@@ -1,166 +1,221 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>ABHINAV BLOCK CRAFT - FIXED V1</title>
+```html
+<!-- ========================= -->
+<!-- PART AR (1/3) SECTION 1 -->
+<!-- ENGINE + GOLDEN TITLE + LIGHTING + TERRAIN +
+```
+```js
+/* =====================================================
+PART AR (1/3) — SECTION 2
+MOUNTAINS + RIVER + VILLAGE LAYOUT + HOUSE PLACEHOLDERS
+Paste BELOW SECTION 1
+===================================================== */
 
-<style>
-body{
-    margin:0;
-    overflow:hidden;
-    background:#87CEEB;
-    font-family:Arial;
+/* ================= MOUNTAINS ================= */
+
+function createMountain(cx, cz, radius, height) {
+
+    const stoneMaterial = new THREE.MeshLambertMaterial({
+        color: 0x888888
+    });
+
+    for (let x = -radius; x < radius; x++) {
+
+        for (let z = -radius; z < radius; z++) {
+
+            const dist = Math.sqrt(x*x + z*z);
+
+            if (dist < radius) {
+
+                const h = Math.floor(
+                    (1 - dist / radius) * height
+                );
+
+                for (let y = 0; y < h; y++) {
+
+                    const block = new THREE.Mesh(
+                        new THREE.BoxGeometry(1,1,1),
+                        stoneMaterial
+                    );
+
+                    block.position.set(
+                        cx + x,
+                        y + 0.5,
+                        cz + z
+                    );
+
+                    scene.add(block);
+                }
+            }
+        }
+    }
 }
 
-#title{
-    position:absolute;
-    top:15px;
-    right:15px;
-    color:white;
-    font-size:22px;
-    font-weight:bold;
-    text-shadow:0 0 10px black;
-    z-index:10;
-}
+createMountain(-45, -45, 18, 18);
+createMountain(45, -40, 15, 16);
+createMountain(0, -60, 20, 22);
 
-#crosshair{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    color:white;
-    font-size:28px;
-    pointer-events:none;
-    text-shadow:0 0 10px black;
-}
 
-canvas{display:block;}
-</style>
-</head>
+/* ================= RIVER ================= */
 
-<body>
-
-<div id="title">ABHINAV BLOCK CRAFT</div>
-<div id="crosshair">+</div>
-
-<canvas id="game"></canvas>
-
-<script type="module">
-
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js";
-
-/* SCENE */
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87CEEB);
-
-/* CAMERA */
-const camera = new THREE.PerspectiveCamera(
-75,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
-);
-
-camera.position.set(0,3,8);
-
-/* RENDERER */
-const renderer = new THREE.WebGLRenderer({
-canvas:document.getElementById("game"),
-antialias:true
+const waterMaterial = new THREE.MeshPhongMaterial({
+    color: 0x3399ff,
+    transparent: true,
+    opacity: 0.8
 });
 
-renderer.setSize(window.innerWidth,window.innerHeight);
+for (let z = -80; z < 80; z++) {
 
-/* LIGHT */
-scene.add(new THREE.AmbientLight(0xffffff,0.6));
+    const riverWidth = 5 + Math.sin(z * 0.1) * 2;
 
-const sun = new THREE.DirectionalLight(0xffffff,1);
-sun.position.set(10,20,10);
-scene.add(sun);
+    for (let x = -riverWidth; x < riverWidth; x++) {
 
-/* GROUND */
-const ground = new THREE.Mesh(
-new THREE.PlaneGeometry(200,200),
-new THREE.MeshLambertMaterial({color:0x3aa655})
-);
+        const water = new THREE.Mesh(
+            new THREE.BoxGeometry(1, 0.2, 1),
+            waterMaterial
+        );
 
-ground.rotation.x = -Math.PI/2;
-scene.add(ground);
+        water.position.set(
+            x + Math.sin(z * 0.15) * 6,
+            0.1,
+            z
+        );
 
-/* TEST CUBE (IMPORTANT DEBUG OBJECT) */
-const testCube = new THREE.Mesh(
-new THREE.BoxGeometry(2,2,2),
-new THREE.MeshLambertMaterial({color:0xff0000})
-);
-
-testCube.position.set(0,1,-5);
-scene.add(testCube);
-
-/* TREES */
-function tree(x,z){
-
-const trunk = new THREE.Mesh(
-new THREE.BoxGeometry(0.5,3,0.5),
-new THREE.MeshLambertMaterial({color:0x8B4513})
-);
-
-trunk.position.set(x,1.5,z);
-scene.add(trunk);
-
-const leaves = new THREE.Mesh(
-new THREE.SphereGeometry(1.5,8,8),
-new THREE.MeshLambertMaterial({color:0x228B22})
-);
-
-leaves.position.set(x,3,z);
-scene.add(leaves);
+        scene.add(water);
+    }
 }
 
-for(let i=0;i<20;i++){
-tree(Math.random()*40-20,Math.random()*40-20);
+
+/* ================= VILLAGE PATHS ================= */
+
+const roadMaterial = new THREE.MeshLambertMaterial({
+    color: 0x7a7a7a
+});
+
+function road(x1, z1, x2, z2) {
+
+    const dx = x2 - x1;
+    const dz = z2 - z1;
+
+    const length = Math.sqrt(dx*dx + dz*dz);
+
+    const r = new THREE.Mesh(
+        new THREE.BoxGeometry(length, 0.1, 3),
+        roadMaterial
+    );
+
+    r.position.set(
+        (x1+x2)/2,
+        0.05,
+        (z1+z2)/2
+    );
+
+    r.rotation.y = Math.atan2(dz, dx);
+
+    scene.add(r);
 }
 
-/* SIMPLE MOVEMENT */
-const keys = {};
+road(-20,10,20,10);
+road(0,-10,0,30);
 
-document.addEventListener("keydown",e=>{
-keys[e.key.toLowerCase()] = true;
-});
 
-document.addEventListener("keyup",e=>{
-keys[e.key.toLowerCase()] = false;
-});
+/* ================= HOUSE PLACEHOLDERS ================= */
+/* Later we will replace these with
+   ultra detailed houses + textures */
 
-/* ANIMATE LOOP */
-function animate(){
+function house(x, z) {
 
-requestAnimationFrame(animate);
+    const wood = new THREE.MeshLambertMaterial({
+        color: 0x8B5A2B
+    });
 
-const speed = 0.15;
+    const roof = new THREE.MeshLambertMaterial({
+        color: 0x444444
+    });
 
-if(keys["w"]) camera.position.z -= speed;
-if(keys["s"]) camera.position.z += speed;
-if(keys["a"]) camera.position.x -= speed;
-if(keys["d"]) camera.position.x += speed;
+    const base = new THREE.Mesh(
+        new THREE.BoxGeometry(6,4,6),
+        wood
+    );
 
-testCube.rotation.y += 0.02;
+    base.position.set(x,2,z);
 
-renderer.render(scene,camera);
+    scene.add(base);
+
+
+    const top = new THREE.Mesh(
+        new THREE.ConeGeometry(5,3,4),
+        roof
+    );
+
+    top.position.set(x,5.5,z);
+
+    top.rotation.y = Math.PI / 4;
+
+    scene.add(top);
 }
 
-animate();
 
-/* RESIZE FIX */
-window.addEventListener("resize",()=>{
+house(-12,10);
+house(0,10);
+house(12,10);
 
-camera.aspect = window.innerWidth/window.innerHeight;
-camera.updateProjectionMatrix();
+house(-12,22);
+house(12,22);
 
-renderer.setSize(window.innerWidth,window.innerHeight);
 
-});
+/* ================= GIANT PINE TREES ================= */
 
-</script>
+function giantPine(x, z) {
 
-</body>
-</html>
+    const trunk = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.8,1.2,16),
+        new THREE.MeshLambertMaterial({
+            color: 0x5b3418
+        })
+    );
+
+    trunk.position.set(x,8,z);
+
+    scene.add(trunk);
+
+
+    for(let i=0;i<5;i++){
+
+        const leaves = new THREE.Mesh(
+            new THREE.ConeGeometry(
+                4 - i*0.3,
+                4,
+                8
+            ),
+            new THREE.MeshLambertMaterial({
+                color:0x0f6a12
+            })
+        );
+
+        leaves.position.set(
+            x,
+            12 + i*2.5,
+            z
+        );
+
+        scene.add(leaves);
+    }
+}
+
+for(let i=0;i<30;i++){
+
+    giantPine(
+        Math.random()*140 - 70,
+        Math.random()*140 - 70
+    );
+}
+
+
+/* ================= PLACEHOLDER ARRAYS ================= */
+/* Custom skins in Section 3 */
+
+const villagers = [];
+const animals = [];
+
+console.log("PART AR SECTION 2 LOADED");
+```
