@@ -1722,27 +1722,22 @@ function createBed(x,y,z){
         color:0xffffff
     });
 
-    const bedBase = new THREE.Mesh(
-        new THREE.BoxGeometry(2,0.4,1),
+    const bed = new THREE.Mesh(
+        new THREE.BoxGeometry(2,0.5,1),
         redMat
     );
 
-    bedBase.position.set(x,0.2,z);
-
-    scene.add(bedBase);
-
+    bed.position.set(x, y+0.25, z);
+    scene.add(bed);
 
     const pillow = new THREE.Mesh(
-        new THREE.BoxGeometry(0.6,0.3,1),
+        new THREE.BoxGeometry(0.5,0.2,1),
         whiteMat
     );
 
-    pillow.position.set(x-0.7,0.45,z);
-
+    pillow.position.set(x-0.75, y+0.6, z);
     scene.add(pillow);
-
 }
-
 /* ===== CRAFTING TABLE ===== */
 
 function createCraftingTable(x,y,z){
