@@ -303,24 +303,23 @@ if(keys["d"]){
 }
 
 
-    player.velocityY -= 0.01;
+   player.velocityY -= 0.01;
 
-    player.y += player.velocityY;
+player.y += player.velocityY;
 
+if(player.y < 2){
 
-    qif(player.y < 2)
+    player.y = 2;
 
-        player.y = 5;
+    player.velocityY = 0;
 
-        player.velocityY = 0;
+    player.grounded = true;
 
-        player.grounded = true;
-    }
-
+}
 
     if(keys[" "] && player.grounded){
 
-        player.velocityY = 0.25;
+        player.velocityY = 0.22;
 
         player.grounded = false;
     }
