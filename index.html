@@ -2372,22 +2372,28 @@ function generateChunk(cx, cz){
                     y === height
                     ? grassBlock
                     : dirtBlock
-                );
+                  );
 
-                block.position.set(
-                    worldX,
-                    y,
-                    worldZ
-                );
+             block.position.set(
+    worldX,
+    y,
+    worldZ
+);
 
-                block.receiveShadow = true;
-                block.castShadow = true;
+block.receiveShadow = true;
 
-                group.add(block);
-            }
-        }
-    }
+if(y === height){
 
+    block.castShadow = true;
+
+}
+else{
+
+    block.castShadow = false;
+
+}
+
+group.add(block);
     scene.add(group);
 
     chunkMeshes.set(
@@ -2448,6 +2454,33 @@ function updateChunks(){
             }
         }
     }
+}
+            function cleanupChunks(){
+
+    const pcx =
+        Math.floor(player.x / CHUNK_SIZE);
+
+    const pcz =
+        Math.floor(player.z / CHUNK_SIZE);
+
+    chunkMeshes.forEach((group,key)=>{
+
+        const [cx,cz] =
+            key.split(",").map(Number);
+
+        if(
+            Math.abs(cx-pcx) > RENDER_DISTANCE + 1 ||
+            Math.abs(cz-pcz) > RENDER_DISTANCE + 1
+        ){
+
+            scene.remove(group);
+
+            chunkMeshes.delete(key);
+
+        }
+
+    });
+
 }
 /* ================= ANIMATE ================= */
 
@@ -2515,7 +2548,7 @@ if(player.y < 2){
 updateChunks();
 
 cleanupChunks();
-
+cleanupChunks();
 renderer.render(
     scene,
     camera
