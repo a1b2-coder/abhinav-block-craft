@@ -886,6 +886,1064 @@ createBlockDeer(0,15);
 createBlockWolf(8,-8);
 
 console.log("FILE 3B PART 2 LOADED");
+    /* =================================================
+PART 1A — BLOCK WORLD DATA SYSTEM
+================================================= */
+
+const worldBlocks = new Map();
+
+function key(x, y, z){
+    return `${x},${y},${z}`;
+}
+
+function placeBlock(x, y, z, material){
+
+    const block = new THREE.Mesh(
+        new THREE.BoxGeometry(1,1,1),
+        material
+    );
+
+    block.position.set(x, y, z);
+
+    block.castShadow = true;
+    block.receiveShadow = true;
+
+    scene.add(block);
+
+    worldBlocks.set(
+        key(x,y,z),
+        block
+    );
+
+    return block;
+}
+
+
+/* ================= MATERIALS ================= */
+
+const grassBlock =
+new THREE.MeshLambertMaterial({
+    color:0x4CAF50
+});
+
+const dirtBlock =
+new THREE.MeshLambertMaterial({
+    color:0x8B5A2B
+});
+
+const stoneBlock =
+new THREE.MeshLambertMaterial({
+    color:0x777777
+});
+
+const snowBlock =
+new THREE.MeshLambertMaterial({
+    color:0xEEEEEE
+});
+
+const sandBlock =
+new THREE.MeshLambertMaterial({
+    color:0xE8D090
+});
+
+const waterBlock =
+new THREE.MeshPhongMaterial({
+    color:0x3399FF,
+    transparent:true,
+    opacity:0.8
+});
+
+
+/* ================= MOUNTAINS ================= */
+
+function mountain(cx, cz, radius, height){
+
+    for(let x=-radius;x<=radius;x++){
+
+        for(let z=-radius;z<=radius;z++){
+
+            const d =
+            Math.sqrt(x*x + z*z);
+
+            if(d > radius) continue;
+
+            const h =
+            Math.floor(
+                (1 - d/radius) * height
+            );
+
+            for(let y=0;y<h;y++){
+
+                placeBlock(
+                    cx+x,
+                    y,
+                    cz+z,
+                    stoneBlock
+                );
+            }
+
+            placeBlock(
+                cx+x,
+                h,
+                cz+z,
+                h > 12 ? snowBlock : grassBlock
+            );
+        }
+    }
+}
+
+
+/* ================= RIVER ================= */
+
+function river(){
+
+    for(let z=-100;z<100;z++){
+
+        const curve =
+        Math.sin(z*0.08) * 8;
+
+        for(let x=-3;x<=3;x++){
+
+            placeBlock(
+                Math.floor(curve)+x,
+                -1,
+                z,
+                waterBlock
+            );
+        }
+    }
+}
+
+
+/* ================= GIANT PINES ================= */
+
+function pine(x,z){
+
+    for(let y=0;y<12;y++){
+
+        placeBlock(
+            x,
+            y,
+            z,
+            dirtBlock
+        );
+    }
+
+    for(let i=0;i<4;i++){
+
+        const size = 4-i;
+
+        for(let dx=-size;dx<=size;dx++){
+
+            for(let dz=-size;dz<=size;dz++){
+
+                if(
+                    Math.abs(dx)+
+                    Math.abs(dz)
+                    <= size+1
+                ){
+
+                    placeBlock(
+                        x+dx,
+                        10+i,
+                        z+dz,
+                        grassBlock
+                    );
+                }
+            }
+        }
+    }
+}
+
+
+/* ================= GENERATION ================= */
+
+mountain(-60,-60,18,20);
+mountain(50,-40,16,18);
+mountain(0,-80,25,24);
+
+river();
+
+for(let i=0;i<30;i++){
+
+    pine(
+
+        Math.floor(
+            Math.random()*160-80
+        ),
+
+        Math.floor(
+            Math.random()*160-80
+        )
+    );
+}
+
+console.log("PART 1A LOADED");
+    /* ==========================================
+PART 1B — REAL BIOMES
+PASTE BELOW:
+console.log("PART 1A LOADED");
+========================================== */
+
+
+/* ===== BIOME MATERIALS ===== */
+
+const biomeGrass =
+new THREE.MeshLambertMaterial({
+    color:0x4CAF50
+});
+
+const biomeSnow =
+new THREE.MeshLambertMaterial({
+    color:0xF4F4F4
+});
+
+const biomeSand =
+new THREE.MeshLambertMaterial({
+    color:0xE8D090
+});
+
+const biomeForest =
+new THREE.MeshLambertMaterial({
+    color:0x2E8B57
+});
+
+
+/* ===== BIOME BLOCK ===== */
+
+function biomeBlock(x,z){
+
+    let mat = biomeGrass;
+
+    /* SNOW BIOME */
+
+    if(x < -60){
+
+        mat = biomeSnow;
+    }
+
+    /* DESERT BIOME */
+
+    else if(x > 60){
+
+        mat = biomeSand;
+    }
+
+    /* FOREST BIOME */
+
+    else if(z > 50){
+
+        mat = biomeForest;
+    }
+
+    /* PLAINS */
+
+    else{
+
+        mat = biomeGrass;
+    }
+
+    const block =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(1,1,1),
+
+        mat
+    );
+
+    block.position.set(
+        x,
+        -0.5,
+        z
+    );
+
+    block.receiveShadow = true;
+
+    scene.add(block);
+}
+
+
+/* ===== GENERATE BIOMES ===== */
+
+for(let x=-100;x<100;x++){
+
+    for(let z=-100;z<100;z++){
+
+        biomeBlock(x,z);
+
+    }
+}
+
+
+/* ===== SNOW TREES ===== */
+
+function snowTree(x,z){
+
+    const trunk =
+    new THREE.Mesh(
+
+        new THREE.CylinderGeometry(
+            0.4,
+            0.5,
+            8
+        ),
+
+        new THREE.MeshLambertMaterial({
+            color:0x5B3418
+        })
+
+    );
+
+    trunk.position.set(
+        x,
+        4,
+        z
+    );
+
+    scene.add(trunk);
+
+
+    const snowTop =
+    new THREE.Mesh(
+
+        new THREE.ConeGeometry(
+            3,
+            6,
+            8
+        ),
+
+        biomeSnow
+
+    );
+
+    snowTop.position.set(
+        x,
+        9,
+        z
+    );
+
+    scene.add(snowTop);
+}
+
+
+for(let i=0;i<20;i++){
+
+    snowTree(
+
+        -90 + Math.random()*25,
+
+        -80 + Math.random()*160
+
+    );
+}
+
+
+/* ===== DESERT CACTUS ===== */
+
+function cactus(x,z){
+
+    const c =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            1,
+            4,
+            1
+        ),
+
+        new THREE.MeshLambertMaterial({
+            color:0x228B22
+        })
+
+    );
+
+    c.position.set(
+        x,
+        2,
+        z
+    );
+
+    scene.add(c);
+}
+
+
+for(let i=0;i<30;i++){
+
+    cactus(
+
+        70 + Math.random()*25,
+
+        -80 + Math.random()*160
+
+    );
+}
+
+
+/* ===== FOREST TREES ===== */
+
+function oakTree(x,z){
+
+    const trunk =
+    new THREE.Mesh(
+
+        new THREE.CylinderGeometry(
+            0.5,
+            0.7,
+            6
+        ),
+
+        new THREE.MeshLambertMaterial({
+            color:0x6B4423
+        })
+
+    );
+
+    trunk.position.set(
+        x,
+        3,
+        z
+    );
+
+    scene.add(trunk);
+
+
+    const leaves =
+    new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+            3,
+            8,
+            8
+        ),
+
+        new THREE.MeshLambertMaterial({
+            color:0x0F7A0F
+        })
+
+    );
+
+    leaves.position.set(
+        x,
+        7,
+        z
+    );
+
+    scene.add(leaves);
+}
+
+
+for(let i=0;i<40;i++){
+
+    oakTree(
+
+        -80 + Math.random()*160,
+
+        60 + Math.random()*30
+
+    );
+}
+
+
+console.log("PART 1B LOADED");
+    /* ==========================================
+PART 1C — ORES
+PASTE BELOW:
+console.log("PART 1B LOADED");
+========================================== */
+
+
+/* ===== ORE MATERIALS ===== */
+
+const coalMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x222222
+});
+
+const ironMaterial =
+new THREE.MeshLambertMaterial({
+    color:0xC0A080
+});
+
+const goldMaterial =
+new THREE.MeshLambertMaterial({
+    color:0xFFD700
+});
+
+const diamondMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x00FFFF
+});
+
+const emeraldMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x00FF55
+});
+
+
+/* ===== ORE FUNCTION ===== */
+
+function spawnOre(material,count,minY,maxY){
+
+    for(let i=0;i<count;i++){
+
+        const x =
+        Math.floor(
+            Math.random()*180-90
+        );
+
+        const z =
+        Math.floor(
+            Math.random()*180-90
+        );
+
+        const y =
+        Math.floor(
+            Math.random()*(maxY-minY)
+        ) + minY;
+
+        const ore =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                1,1,1
+            ),
+
+            material
+        );
+
+        ore.position.set(
+            x,
+            y,
+            z
+        );
+
+        ore.castShadow = true;
+        ore.receiveShadow = true;
+
+        scene.add(ore);
+
+    }
+
+}
+
+
+/* ===== GENERATE ORES ===== */
+
+spawnOre(coalMaterial,300,-8,-1);
+
+spawnOre(ironMaterial,200,-12,-4);
+
+spawnOre(goldMaterial,80,-18,-10);
+
+spawnOre(diamondMaterial,40,-30,-20);
+
+spawnOre(emeraldMaterial,20,-35,-25);
+
+
+/* ===== BIG DIAMOND MOUNTAIN CAVE ===== */
+
+for(let x=-5;x<5;x++){
+
+    for(let z=-5;z<5;z++){
+
+        if(Math.random()>0.8){
+
+            const diamond =
+            new THREE.Mesh(
+
+                new THREE.BoxGeometry(
+                    1,1,1
+                ),
+
+                diamondMaterial
+            );
+
+            diamond.position.set(
+                75 + x,
+                -25,
+                75 + z
+            );
+
+            scene.add(diamond);
+        }
+
+    }
+
+}
+
+
+console.log("PART 1C LOADED");
+    /* ==========================================
+PART 1D — MASSIVE MOUNTAINS + PINE FORESTS
+PASTE BELOW:
+console.log("PART 1C LOADED");
+========================================== */
+
+
+/* ===== MOUNTAIN MATERIALS ===== */
+
+const mountainStone =
+new THREE.MeshLambertMaterial({
+    color:0x777777
+});
+
+const snowCap =
+new THREE.MeshLambertMaterial({
+    color:0xFFFFFF
+});
+
+
+/* ===== HUGE MOUNTAIN GENERATOR ===== */
+
+function megaMountain(cx,cz,radius,height){
+
+    for(let x=-radius;x<radius;x++){
+
+        for(let z=-radius;z<radius;z++){
+
+            const dist =
+            Math.sqrt(x*x+z*z);
+
+            if(dist < radius){
+
+                const h =
+                Math.floor(
+                    (1-dist/radius) * height
+                );
+
+                for(let y=0;y<h;y++){
+
+                    const block =
+                    new THREE.Mesh(
+
+                        new THREE.BoxGeometry(
+                            1,1,1
+                        ),
+
+                        y > height*0.8
+                        ? snowCap
+                        : mountainStone
+
+                    );
+
+                    block.position.set(
+                        cx+x,
+                        y,
+                        cz+z
+                    );
+
+                    block.castShadow = true;
+                    block.receiveShadow = true;
+
+                    scene.add(block);
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* ===== MASSIVE MOUNTAINS ===== */
+
+megaMountain(-80,-80,30,45);
+
+megaMountain(80,-70,28,42);
+
+megaMountain(0,-95,35,50);
+
+megaMountain(-40,80,25,38);
+
+megaMountain(70,70,22,36);
+
+
+
+/* ===== GIANT PINE TREES ===== */
+
+const pineTrunk =
+new THREE.MeshLambertMaterial({
+    color:0x5B3418
+});
+
+const pineLeaves =
+new THREE.MeshLambertMaterial({
+    color:0x0B5F18
+});
+
+
+function giantPine(x,z){
+
+    const trunkHeight =
+    12 + Math.random()*10;
+
+
+    /* TRUNK */
+
+    for(let y=0;y<trunkHeight;y++){
+
+        const log =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                1,1,1
+            ),
+
+            pineTrunk
+        );
+
+        log.position.set(
+            x,
+            y,
+            z
+        );
+
+        log.castShadow = true;
+
+        scene.add(log);
+
+    }
+
+
+    /* LEAVES */
+
+    let size = 6;
+
+    for(let level=0;level<6;level++){
+
+        for(let lx=-size;lx<=size;lx++){
+
+            for(let lz=-size;lz<=size;lz++){
+
+                if(
+
+                    Math.abs(lx)+
+                    Math.abs(lz)
+
+                    < size+1
+
+                ){
+
+                    const leaf =
+                    new THREE.Mesh(
+
+                        new THREE.BoxGeometry(
+                            1,1,1
+                        ),
+
+                        pineLeaves
+                    );
+
+                    leaf.position.set(
+
+                        x+lx,
+
+                        trunkHeight-2
+                        + level,
+
+                        z+lz
+
+                    );
+
+                    leaf.castShadow = true;
+
+                    scene.add(leaf);
+
+                }
+
+            }
+
+        }
+
+        size--;
+
+    }
+
+}
+
+
+
+/* ===== PINE FORESTS ===== */
+
+for(let i=0;i<80;i++){
+
+    giantPine(
+
+        -90 + Math.random()*180,
+
+        -90 + Math.random()*180
+
+    );
+
+}
+
+
+
+console.log("PART 1D LOADED");
+    /* ==========================================
+PART 2A
+REAL MINECRAFT VILLAGE
+PASTE BELOW PART 1D
+========================================== */
+
+
+/* ===== MATERIALS ===== */
+
+const oakLogMat = new THREE.MeshLambertMaterial({
+    color:0x8B5A2B
+});
+
+const oakPlankMat = new THREE.MeshLambertMaterial({
+    color:0xC89D62
+});
+
+const roofMat = new THREE.MeshLambertMaterial({
+    color:0x6D4C41
+        /* ==========================================
+PART 2B
+VILLAGE DECORATIONS + INTERIORS
+PASTE BELOW:
+console.log("PART 2A LOADED");
+========================================== */
+
+
+/* ===== BEDS ===== */
+
+function createBed(x,y,z){
+
+    const redMat = new THREE.MeshLambertMaterial({
+        color:0xcc2222
+    });
+
+    const whiteMat = new THREE.MeshLambertMaterial({
+        color:0xffffff
+    });
+
+    const pillow = new THREE.Mesh(
+        new THREE.BoxGeometry(1,0.25,0.5),
+        whiteMat
+    );
+
+    pillow.position.set(x,y+0.4,z-0.25);
+
+    scene.add(pillow);
+
+    const bed = new THREE.Mesh(
+        new THREE.BoxGeometry(1,0.25,1.5),
+        redMat
+    );
+
+    bed.position.set(x,y+0.2,z+0.25);
+
+    scene.add(bed);
+}
+
+
+/* ===== CRAFTING TABLE ===== */
+
+function createCraftingTable(x,y,z){
+
+    const table = new THREE.Mesh(
+
+        new THREE.BoxGeometry(1,1,1),
+
+        new THREE.MeshLambertMaterial({
+            color:0x9c6b30
+        })
+
+    );
+
+    table.position.set(x,y+0.5,z);
+
+    table.castShadow = true;
+
+    scene.add(table);
+}
+
+
+/* ===== FURNACE ===== */
+
+function createFurnace(x,y,z){
+
+    const furnace = new THREE.Mesh(
+
+        new THREE.BoxGeometry(1,1,1),
+
+        new THREE.MeshLambertMaterial({
+            color:0x777777
+        })
+
+    );
+
+    furnace.position.set(x,y+0.5,z);
+
+    furnace.castShadow = true;
+
+    scene.add(furnace);
+}
+
+
+/* ===== CHEST ===== */
+
+function createChest(x,y,z){
+
+    const chest = new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            1,
+            0.8,
+            1
+        ),
+
+        new THREE.MeshLambertMaterial({
+            color:0xb8742d
+        })
+
+    );
+
+    chest.position.set(x,y+0.4,z);
+
+    chest.castShadow = true;
+
+    scene.add(chest);
+}
+
+
+/* ===== LAMP POSTS ===== */
+
+function lampPost(x,z){
+
+    const pole = new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            0.3,
+            4,
+            0.3
+        ),
+
+        oakLogMat
+    );
+
+    pole.position.set(x,2,z);
+
+    scene.add(pole);
+
+
+    const lamp = new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            0.7,
+            0.7,
+            0.7
+        ),
+
+        new THREE.MeshLambertMaterial({
+            color:0xffdd66,
+            emissive:0xffcc44
+        })
+
+    );
+
+    lamp.position.set(x,4.5,z);
+
+    scene.add(lamp);
+}
+
+
+/* ===== VILLAGE WELL ===== */
+
+function villageWell(x,z){
+
+    for(let i=-2;i<=2;i++){
+
+        for(let j=-2;j<=2;j++){
+
+            const block = new THREE.Mesh(
+
+                new THREE.BoxGeometry(1,1,1),
+
+                stoneMat
+
+            );
+
+            block.position.set(
+                x+i,
+                0.5,
+                z+j
+            );
+
+            scene.add(block);
+        }
+    }
+
+    for(let i=-1;i<=1;i++){
+
+        for(let j=-1;j<=1;j++){
+
+            const water = new THREE.Mesh(
+
+                new THREE.BoxGeometry(
+                    1,
+                    0.3,
+                    1
+                ),
+
+                new THREE.MeshPhongMaterial({
+                    color:0x3399ff
+                })
+
+            );
+
+            water.position.set(
+                x+i,
+                0.2,
+                z+j
+            );
+
+            scene.add(water);
+        }
+    }
+}
+
+
+/* ===== HOUSE INTERIORS ===== */
+
+createBed(-30,0,-10);
+createCraftingTable(-28,0,-10);
+createChest(-32,0,-10);
+
+createBed(-15,0,-10);
+createFurnace(-13,0,-10);
+
+createBed(0,0,-10);
+createChest(2,0,-10);
+
+createBed(15,0,-10);
+createCraftingTable(17,0,-10);
+
+createBed(30,0,-10);
+createFurnace(32,0,-10);
+
+createBed(45,0,-10);
+createChest(47,0,-10);
+
+
+/* ===== LAMPS ===== */
+
+lampPost(-22,-5);
+lampPost(8,-5);
+lampPost(38,-5);
+
+
+/* ===== WELL ===== */
+
+villageWell(10,8);
+
+
+console.log("PART 2B LOADED");
 /* ================= ANIMATE ================= */
 
 function animate(){
