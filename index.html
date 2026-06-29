@@ -688,8 +688,191 @@ function createSheep(x,z){
 
     animals.push(body);
 }
+/****************************************
+FILE 3B PART 3
+PROPER BLOCK ANIMALS
+PASTE HERE
+****************************************/
+function makeLeg(x,z,color){
+
+    const leg = new THREE.Mesh(
+        new THREE.BoxGeometry(0.25,0.8,0.25),
+        new THREE.MeshLambertMaterial({color})
+    );
+
+    leg.position.set(x,0.4,z);
+
+    return leg;
+}
 
 
+/* ===== BLOCK COW ===== */
+
+function createBlockCow(x,z){
+
+    const cow = new THREE.Group();
+
+    const mat = new THREE.MeshLambertMaterial({
+        map:cowTexture
+    });
+
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(1.8,1,1),
+        mat
+    );
+
+    body.position.y = 1.2;
+    cow.add(body);
+
+    const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.8,0.8,0.8),
+        mat
+    );
+
+    head.position.set(1.1,1.3,0);
+    cow.add(head);
+
+    cow.add(makeLeg(-0.6,-0.3,0x222222));
+    cow.add(makeLeg(-0.6, 0.3,0x222222));
+    cow.add(makeLeg( 0.6,-0.3,0x222222));
+    cow.add(makeLeg( 0.6, 0.3,0x222222));
+
+    cow.position.set(x,0,z);
+
+    cow.traverse(o=>{
+        if(o.isMesh) o.castShadow=true;
+    });
+
+    scene.add(cow);
+}
+
+
+/* ===== BLOCK HORSE ===== */
+
+function createBlockHorse(x,z){
+
+    const horse = new THREE.Group();
+
+    const mat = new THREE.MeshLambertMaterial({
+        map:pigTexture
+    });
+
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(2,1,0.9),
+        mat
+    );
+
+    body.position.y = 1.4;
+    horse.add(body);
+
+    const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.7,1,0.6),
+        mat
+    );
+
+    head.position.set(1.2,1.7,0);
+
+    horse.add(head);
+
+    horse.add(makeLeg(-0.7,-0.25,0x5A3A1F));
+    horse.add(makeLeg(-0.7, 0.25,0x5A3A1F));
+    horse.add(makeLeg( 0.7,-0.25,0x5A3A1F));
+    horse.add(makeLeg( 0.7, 0.25,0x5A3A1F));
+
+    horse.position.set(x,0,z);
+
+    horse.traverse(o=>{
+        if(o.isMesh) o.castShadow=true;
+    });
+
+    scene.add(horse);
+}
+
+
+/* ===== BLOCK DEER ===== */
+
+function createBlockDeer(x,z){
+
+    const deer = new THREE.Group();
+
+    const mat = new THREE.MeshLambertMaterial({
+        map:sheepTexture
+    });
+
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(1.6,0.8,0.8),
+        mat
+    );
+
+    body.position.y = 1.5;
+
+    deer.add(body);
+
+    const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.6,0.8,0.5),
+        mat
+    );
+
+    head.position.set(1,1.8,0);
+
+    deer.add(head);
+
+    deer.add(makeLeg(-0.5,-0.2,0x7A5530));
+    deer.add(makeLeg(-0.5, 0.2,0x7A5530));
+    deer.add(makeLeg( 0.5,-0.2,0x7A5530));
+    deer.add(makeLeg( 0.5, 0.2,0x7A5530));
+
+    deer.position.set(x,0,z);
+
+    deer.traverse(o=>{
+        if(o.isMesh) o.castShadow=true;
+    });
+
+    scene.add(deer);
+}
+
+
+/* ===== BLOCK WOLF ===== */
+
+function createBlockWolf(x,z){
+
+    const wolf = new THREE.Group();
+
+    const mat = new THREE.MeshLambertMaterial({
+        map:wolfTexture
+    });
+
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(1.4,0.7,0.7),
+        mat
+    );
+
+    body.position.y = 1.1;
+
+    wolf.add(body);
+
+    const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.6,0.6,0.6),
+        mat
+    );
+
+    head.position.set(0.9,1.2,0);
+
+    wolf.add(head);
+
+    wolf.add(makeLeg(-0.4,-0.2,0x555555));
+    wolf.add(makeLeg(-0.4, 0.2,0x555555));
+    wolf.add(makeLeg( 0.4,-0.2,0x555555));
+    wolf.add(makeLeg( 0.4, 0.2,0x555555));
+
+    wolf.position.set(x,0,z);
+
+    wolf.traverse(o=>{
+        if(o.isMesh) o.castShadow=true;
+    });
+
+    scene.add(wolf);
+}
 /* ===== SPAWN ===== */
 
 /* ===== SPAWN ===== */
@@ -697,16 +880,10 @@ function createSheep(x,z){
 createVillager(5,5);
 createVillager(-5,8);
 
-/* OLD ANIMALS */
-createCow(10,10);
-createPig(-10,10);
-createSheep(0,15);
-
-/* NEW REAL 3D ANIMALS */
-createRealCow(15,12);
-createRealHorse(-15,12);
-createRealDeer(0,20);
-createRealWolf(8,-8);
+createBlockCow(10,10);
+createBlockHorse(-10,10);
+createBlockDeer(0,15);
+createBlockWolf(8,-8);
 
 console.log("FILE 3B PART 2 LOADED");
 /* ================= ANIMATE ================= */
