@@ -1743,19 +1743,6 @@ function createBed(x,y,z){
 
 }
 
-}
-
-    const bed = new THREE.Mesh(
-        new THREE.BoxGeometry(1,0.25,1.5),
-        redMat
-    );
-
-    bed.position.set(x,y+0.2,z+0.25);
-
-    scene.add(bed);
-}
-
-
 /* ===== CRAFTING TABLE ===== */
 
 function createCraftingTable(x,y,z){
