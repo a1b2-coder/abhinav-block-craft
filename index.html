@@ -100,8 +100,9 @@ new THREE.PerspectiveCamera(
 
 camera.position.set(
     0,
-    5,
+    2,
     10
+);
 );
 
 
@@ -195,7 +196,7 @@ sheepTexture
 const player = {
 
     x:0,
-    y:5,
+    y:2,
     z:10,
 
     velocityY:0,
@@ -207,7 +208,28 @@ const player = {
 };
 
 const keys = {};
+let yaw = 0;
+let pitch = 0;
 
+document.body.addEventListener("click", () => {
+    document.body.requestPointerLock();
+});
+
+document.addEventListener("mousemove", (e) => {
+
+    if (document.pointerLockElement !== document.body)
+        return;
+
+    yaw -= e.movementX * 0.002;
+    pitch -= e.movementY * 0.002;
+pitch = Math.max(
+    -1.5,
+    Math.min(1.5, pitch)
+);
+    camera.rotation.order = "YXZ";
+    camera.rotation.y = yaw;
+    camera.rotation.x = pitch;
+});
 
 document.addEventListener(
 "keydown",
@@ -254,17 +276,31 @@ function animate(){
         animate
     );
 
-    if(keys["w"])
-        player.z -= player.speed;
+ const fx = Math.sin(yaw);
+const fz = Math.cos(yaw);
 
-    if(keys["s"])
-        player.z += player.speed;
+const rx = Math.cos(yaw);
+const rz = -Math.sin(yaw);
 
-    if(keys["a"])
-        player.x -= player.speed;
+if(keys["w"]){
+    player.x -= fx * player.speed;
+    player.z -= fz * player.speed;
+}
 
-    if(keys["d"])
-        player.x += player.speed;
+if(keys["s"]){
+    player.x += fx * player.speed;
+    player.z += fz * player.speed;
+}
+
+if(keys["a"]){
+    player.x -= rx * player.speed;
+    player.z -= rz * player.speed;
+}
+
+if(keys["d"]){
+    player.x += rx * player.speed;
+    player.z += rz * player.speed;
+}
 
 
     player.velocityY -= 0.01;
@@ -272,7 +308,7 @@ function animate(){
     player.y += player.velocityY;
 
 
-    if(player.y < 5){
+    qif(player.y < 2)
 
         player.y = 5;
 
