@@ -205,7 +205,294 @@ document.addEventListener(
 e=>keys[e.key.toLowerCase()]=false
 );
 
+/* ==================================================
+PART AR — FILE 2
+MOUNTAINS + RIVER + GIANT TREES + HOUSES
+PASTE BELOW FILE 1 (ABOVE animate())
+================================================== */
 
+
+/* ================= MOUNTAINS ================= */
+
+const stoneMaterial = new THREE.MeshLambertMaterial({
+    color: 0x888888
+});
+
+function createMountain(cx, cz, radius, height){
+
+    for(let x=-radius; x<radius; x++){
+
+        for(let z=-radius; z<radius; z++){
+
+            const dist = Math.sqrt(x*x + z*z);
+
+            if(dist < radius){
+
+                const h = Math.floor(
+                    (1 - dist/radius) * height
+                );
+
+                for(let y=0; y<h; y++){
+
+                    const block = new THREE.Mesh(
+                        new THREE.BoxGeometry(1,1,1),
+                        stoneMaterial
+                    );
+
+                    block.position.set(
+                        cx + x,
+                        y + 0.5,
+                        cz + z
+                    );
+
+                    block.castShadow = true;
+                    block.receiveShadow = true;
+
+                    scene.add(block);
+                }
+            }
+        }
+    }
+}
+
+createMountain(-60,-60,20,18);
+createMountain(60,-50,18,16);
+createMountain(0,-80,25,22);
+
+
+
+/* ================= RIVER ================= */
+
+const waterMaterial = new THREE.MeshPhongMaterial({
+    color:0x3399ff,
+    transparent:true,
+    opacity:0.85
+});
+
+for(let z=-100; z<100; z++){
+
+    const riverWidth =
+        4 + Math.sin(z*0.08)*2;
+
+    for(let x=-riverWidth; x<riverWidth; x++){
+
+        const water = new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                1,
+                0.2,
+                1
+            ),
+
+            waterMaterial
+        );
+
+        water.position.set(
+            x + Math.sin(z*0.12)*8,
+            -0.2,
+            z
+        );
+
+        scene.add(water);
+    }
+}
+
+
+
+/* ================= GIANT PINE TREES ================= */
+
+function giantPine(x,z){
+
+    const trunk = new THREE.Mesh(
+
+        new THREE.CylinderGeometry(
+            0.8,
+            1.2,
+            18
+        ),
+
+        new THREE.MeshLambertMaterial({
+            color:0x5b3418
+        })
+
+    );
+
+    trunk.position.set(x,9,z);
+
+    trunk.castShadow = true;
+
+    scene.add(trunk);
+
+
+    for(let i=0;i<6;i++){
+
+        const leaves = new THREE.Mesh(
+
+            new THREE.ConeGeometry(
+                4.5 - i*0.4,
+                4,
+                8
+            ),
+
+            new THREE.MeshLambertMaterial({
+                color:0x0f6a12
+            })
+
+        );
+
+        leaves.position.set(
+            x,
+            12 + i*2.5,
+            z
+        );
+
+        leaves.castShadow = true;
+
+        scene.add(leaves);
+    }
+}
+
+
+for(let i=0;i<40;i++){
+
+    giantPine(
+
+        Math.random()*180 - 90,
+
+        Math.random()*180 - 90
+
+    );
+}
+
+
+
+/* ================= VILLAGE ROADS ================= */
+
+const roadMaterial =
+new THREE.MeshLambertMaterial({
+    color:0x666666
+});
+
+
+function road(x1,z1,x2,z2){
+
+    const dx = x2-x1;
+    const dz = z2-z1;
+
+    const len =
+        Math.sqrt(dx*dx + dz*dz);
+
+    const r = new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            len,
+            0.15,
+            4
+        ),
+
+        roadMaterial
+    );
+
+    r.position.set(
+
+        (x1+x2)/2,
+
+        0.05,
+
+        (z1+z2)/2
+
+    );
+
+    r.rotation.y =
+        Math.atan2(dz,dx);
+
+    scene.add(r);
+}
+
+
+road(-20,15,20,15);
+road(0,-10,0,35);
+
+
+
+/* ================= HOUSES ================= */
+
+function house(x,z){
+
+    const wallMaterial =
+    new THREE.MeshLambertMaterial({
+        color:0x8B5A2B
+    });
+
+    const roofMaterial =
+    new THREE.MeshLambertMaterial({
+        color:0x333333
+    });
+
+
+    const base = new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            8,
+            5,
+            8
+        ),
+
+        wallMaterial
+    );
+
+    base.position.set(
+        x,
+        2.5,
+        z
+    );
+
+    base.castShadow = true;
+
+    scene.add(base);
+
+
+    const roof = new THREE.Mesh(
+
+        new THREE.ConeGeometry(
+            6,
+            4,
+            4
+        ),
+
+        roofMaterial
+    );
+
+    roof.position.set(
+        x,
+        7,
+        z
+    );
+
+    roof.rotation.y =
+        Math.PI/4;
+
+    roof.castShadow = true;
+
+    scene.add(roof);
+}
+
+
+house(-15,15);
+house(0,15);
+house(15,15);
+
+house(-15,28);
+house(15,28);
+
+
+
+/* ================= ARRAYS FOR FILE 3 ================= */
+
+const villagers = [];
+const animals = [];
+
+console.log("FILE 2 LOADED");
 /* ================= ANIMATION ================= */
 
 function animate(){
