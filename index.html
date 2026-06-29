@@ -2341,7 +2341,7 @@ MINECRAFT CHUNK ENGINE
 
 const CHUNK_SIZE = 16;
 const RENDER_DISTANCE = 4;
-
+const chunkMeshes = new Map();
 function chunkKey(cx, cz){
     return `${cx},${cz}`;
 }
