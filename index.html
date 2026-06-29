@@ -12,7 +12,249 @@
 
 <script type="module">
 
-// FILE 1 KA CODE YAHAN PASTE HOGA
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js";
+
+/* ================= TITLE ================= */
+
+const title = document.createElement("div");
+
+title.innerHTML = "ABHINAV BLOCK CRAFT";
+
+title.style.position = "absolute";
+title.style.top = "20px";
+title.style.right = "20px";
+title.style.fontSize = "34px";
+title.style.fontWeight = "bold";
+title.style.fontFamily = "serif";
+title.style.color = "#FFD700";
+title.style.textShadow =
+"0 0 10px #ffcc00, 0 0 20px #ff9900, 0 0 40px black";
+
+document.body.appendChild(title);
+
+
+/* ================= CROSSHAIR ================= */
+
+const cross = document.createElement("div");
+
+cross.innerHTML = "+";
+
+cross.style.position = "absolute";
+cross.style.left = "50%";
+cross.style.top = "50%";
+cross.style.transform = "translate(-50%,-50%)";
+cross.style.fontSize = "28px";
+cross.style.color = "white";
+cross.style.textShadow = "0 0 10px black";
+
+document.body.appendChild(cross);
+
+
+/* ================= SCENE ================= */
+
+const scene = new THREE.Scene();
+
+scene.background =
+new THREE.Color(0x87ceeb);
+
+scene.fog =
+new THREE.Fog(0x87ceeb, 80, 250);
+
+
+/* ================= CAMERA ================= */
+
+const camera =
+new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
+
+camera.position.set(0, 8, 20);
+
+
+/* ================= RENDERER ================= */
+
+const renderer =
+new THREE.WebGLRenderer({
+
+canvas:
+document.getElementById("game"),
+
+antialias:true
+
+});
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+renderer.shadowMap.enabled = true;
+
+renderer.shadowMap.type =
+THREE.PCFSoftShadowMap;
+
+
+/* ================= LIGHTING ================= */
+
+const sun =
+new THREE.DirectionalLight(
+0xffffff,
+2
+);
+
+sun.position.set(80,120,50);
+
+sun.castShadow = true;
+
+sun.shadow.mapSize.width = 4096;
+sun.shadow.mapSize.height = 4096;
+
+scene.add(sun);
+
+scene.add(
+new THREE.AmbientLight(
+0xffffff,
+0.45
+)
+);
+
+
+/* ================= TEXTURE SYSTEM ================= */
+
+const textureLoader =
+new THREE.TextureLoader();
+
+/* YOUR CUSTOM SKINS */
+
+const villagerTexture =
+textureLoader.load("./textures/villager.png");
+
+const cowTexture =
+textureLoader.load("./textures/cow.png");
+
+const pigTexture =
+textureLoader.load("./textures/pig.png");
+
+const sheepTexture =
+textureLoader.load("./textures/sheep.png");
+
+
+villagerTexture.magFilter =
+THREE.NearestFilter;
+
+cowTexture.magFilter =
+THREE.NearestFilter;
+
+pigTexture.magFilter =
+THREE.NearestFilter;
+
+sheepTexture.magFilter =
+THREE.NearestFilter;
+
+
+/* ================= TERRAIN ================= */
+
+const grassMaterial =
+new THREE.MeshLambertMaterial({
+color:0x4CAF50
+});
+
+for(let x=-100;x<100;x++){
+
+    for(let z=-100;z<100;z++){
+
+        const block =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                1,
+                1,
+                1
+            ),
+
+            grassMaterial
+        );
+
+        block.position.set(
+            x,
+            -0.5,
+            z
+        );
+
+        block.receiveShadow = true;
+
+        scene.add(block);
+    }
+}
+
+
+/* ================= BASIC MOVEMENT ================= */
+
+const keys = {};
+
+document.addEventListener(
+"keydown",
+e=>keys[e.key.toLowerCase()]=true
+);
+
+document.addEventListener(
+"keyup",
+e=>keys[e.key.toLowerCase()]=false
+);
+
+
+/* ================= ANIMATION ================= */
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+    const speed = 0.25;
+
+    if(keys["w"])
+        camera.position.z -= speed;
+
+    if(keys["s"])
+        camera.position.z += speed;
+
+    if(keys["a"])
+        camera.position.x -= speed;
+
+    if(keys["d"])
+        camera.position.x += speed;
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+animate();
+
+
+/* ================= RESIZE ================= */
+
+window.addEventListener(
+"resize",
+()=>{
+
+camera.aspect =
+window.innerWidth /
+window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+});
 
 </script>
 
