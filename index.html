@@ -2335,11 +2335,93 @@ MINECRAFT CHUNK ENGINE
 STEP 2
 ========================================== */
 
+/* =====================================
+MINECRAFT CHUNK ENGINE
+===================================== */
+
 const CHUNK_SIZE = 16;
+const RENDER_DISTANCE = 4;
 
-const chunkMeshes = new Map();
+function chunkKey(cx, cz){
+    return `${cx},${cz}`;
+}
 
-function chunkKey(cx,
+function generateChunk(cx, cz){
+
+    const group = new THREE.Group();
+
+    for(let x=0;x<CHUNK_SIZE;x++){
+
+        for(let z=0;z<CHUNK_SIZE;z++){
+
+            const worldX = cx * CHUNK_SIZE + x;
+            const worldZ = cz * CHUNK_SIZE + z;
+
+            const noise =
+                Math.sin(worldX * 0.05)
+              + Math.cos(worldZ * 0.05);
+
+            const height =
+                Math.floor(noise * 3);
+
+            for(let y=-2;y<=height;y++){
+
+                const block = new THREE.Mesh(
+                    new THREE.BoxGeometry(1,1,1),
+
+                    y === height
+                    ? grassBlock
+                    : dirtBlock
+                );
+
+                block.position.set(
+                    worldX,
+                    y,
+                    worldZ
+                );
+
+                block.receiveShadow = true;
+                block.castShadow = true;
+
+                group.add(block);
+            }
+        }
+    }
+
+    scene.add(group);
+
+    chunkMeshes.set(
+        chunkKey(cx,cz),
+        group
+    );
+}
+
+function updateChunks(){
+
+    const pcx =
+        Math.floor(player.x / CHUNK_SIZE);
+
+    const pcz =
+        Math.floor(player.z / CHUNK_SIZE);
+
+    for(let x=-RENDER_DISTANCE;x<=RENDER_DISTANCE;x++){
+
+        for(let z=-RENDER_DISTANCE;z<=RENDER_DISTANCE;z++){
+
+            const cx = pcx + x;
+            const cz = pcz + z;
+
+            const key =
+                chunkKey(cx,cz);
+
+            if(!chunkMeshes.has(key)){
+
+                generateChunk(cx,cz);
+
+            }
+        }
+    }
+}
 /* ================= ANIMATE ================= */
 
 function animate(){
@@ -2403,7 +2485,7 @@ if(player.y < 2){
         player.z
     );
 
-
+updateChunks();
     renderer.render(
         scene,
         camera
