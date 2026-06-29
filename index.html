@@ -1703,6 +1703,274 @@ const oakPlankMat = new THREE.MeshLambertMaterial({
 const roofMat = new THREE.MeshLambertMaterial({
     color:0x6D4C41
         });
+    /* ==========================================
+PART 2A
+REAL MINECRAFT VILLAGE
+PASTE BELOW roofMat
+========================================== */
+
+
+/* ===== MINECRAFT HOUSE ===== */
+
+function minecraftHouse(x, z){
+
+    // FLOOR
+    const floor = new THREE.Mesh(
+        new THREE.BoxGeometry(7, 1, 7),
+        oakPlankMat
+    );
+
+    floor.position.set(x, 0.5, z);
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+
+    // WALLS
+    for(let y=1; y<=3; y++){
+
+        for(let i=-3; i<=3; i++){
+
+            // Front wall
+            if(i !== 0 || y !== 1){
+                const front = new THREE.Mesh(
+                    new THREE.BoxGeometry(1,1,1),
+                    oakPlankMat
+                );
+
+                front.position.set(x+i, y+0.5, z-3);
+                scene.add(front);
+            }
+
+            // Back wall
+            const back = new THREE.Mesh(
+                new THREE.BoxGeometry(1,1,1),
+                oakPlankMat
+            );
+
+            back.position.set(x+i, y+0.5, z+3);
+            scene.add(back);
+
+
+            // Left wall
+            const left = new THREE.Mesh(
+                new THREE.BoxGeometry(1,1,1),
+                oakPlankMat
+            );
+
+            left.position.set(x-3, y+0.5, z+i);
+            scene.add(left);
+
+
+            // Right wall
+            const right = new THREE.Mesh(
+                new THREE.BoxGeometry(1,1,1),
+                oakPlankMat
+            );
+
+            right.position.set(x+3, y+0.5, z+i);
+            scene.add(right);
+
+        }
+    }
+
+
+    // ROOF
+    for(let y=0; y<3; y++){
+
+        for(let i=-4+y; i<=4-y; i++){
+
+            const roof1 = new THREE.Mesh(
+                new THREE.BoxGeometry(1,1,1),
+                roofMat
+            );
+
+            roof1.position.set(
+                x+i,
+                4+y,
+                z
+            );
+
+            scene.add(roof1);
+
+        }
+    }
+
+
+    // LOG CORNERS
+    const corners = [
+        [-3,-3],
+        [3,-3],
+        [-3,3],
+        [3,3]
+    ];
+
+    corners.forEach(c=>{
+
+        for(let y=1;y<=4;y++){
+
+            const log = new THREE.Mesh(
+                new THREE.BoxGeometry(1,1,1),
+                oakLogMat
+            );
+
+            log.position.set(
+                x+c[0],
+                y+0.5,
+                z+c[1]
+            );
+
+            scene.add(log);
+
+        }
+
+    });
+
+}
+
+
+/* ===== FENCED FARM ===== */
+
+function fencedFarm(x,z){
+
+    const cropMat =
+    new THREE.MeshLambertMaterial({
+        color:0x55cc33
+    });
+
+    const fenceMat =
+    new THREE.MeshLambertMaterial({
+        color:0x8B5A2B
+    });
+
+
+    // Crops
+    for(let i=-3;i<=3;i++){
+
+        for(let j=-2;j<=2;j++){
+
+            const crop = new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    0.8,
+                    0.8,
+                    0.8
+                ),
+                cropMat
+            );
+
+            crop.position.set(
+                x+i,
+                0.4,
+                z+j
+            );
+
+            scene.add(crop);
+        }
+    }
+
+
+    // Fence
+    for(let i=-4;i<=4;i++){
+
+        const f1 = new THREE.Mesh(
+            new THREE.BoxGeometry(1,1,1),
+            fenceMat
+        );
+
+        f1.position.set(x+i,0.5,z-3);
+        scene.add(f1);
+
+
+        const f2 = new THREE.Mesh(
+            new THREE.BoxGeometry(1,1,1),
+            fenceMat
+        );
+
+        f2.position.set(x+i,0.5,z+3);
+        scene.add(f2);
+
+    }
+
+
+    for(let i=-2;i<=2;i++){
+
+        const f3 = new THREE.Mesh(
+            new THREE.BoxGeometry(1,1,1),
+            fenceMat
+        );
+
+        f3.position.set(x-4,0.5,z+i);
+        scene.add(f3);
+
+
+        const f4 = new THREE.Mesh(
+            new THREE.BoxGeometry(1,1,1),
+            fenceMat
+        );
+
+        f4.position.set(x+4,0.5,z+i);
+        scene.add(f4);
+
+    }
+
+}
+
+
+/* ===== VILLAGE ROAD ===== */
+
+function villageRoad(x1,z1,x2,z2){
+
+    const roadMat =
+    new THREE.MeshLambertMaterial({
+        color:0x7d7d7d
+    });
+
+    const dx = x2-x1;
+    const dz = z2-z1;
+
+    const len =
+    Math.sqrt(dx*dx + dz*dz);
+
+    const r = new THREE.Mesh(
+        new THREE.BoxGeometry(
+            len,
+            0.2,
+            3
+        ),
+        roadMat
+    );
+
+    r.position.set(
+        (x1+x2)/2,
+        0.1,
+        (z1+z2)/2
+    );
+
+    r.rotation.y =
+    Math.atan2(dz,dx);
+
+    scene.add(r);
+
+}
+
+
+/* ===== CREATE VILLAGE ===== */
+
+minecraftHouse(-30,-10);
+minecraftHouse(-15,-10);
+minecraftHouse(0,-10);
+minecraftHouse(15,-10);
+minecraftHouse(30,-10);
+minecraftHouse(45,-10);
+
+
+fencedFarm(-10,15);
+fencedFarm(20,15);
+
+
+villageRoad(-30,-5,45,-5);
+
+
+console.log("PART 2A LOADED");
         /* ==========================================
 PART 2B
 VILLAGE DECORATIONS + INTERIORS
