@@ -1491,7 +1491,33 @@ const snowCap =
 new THREE.MeshLambertMaterial({
     color:0xFFFFFF
 });
+/* ===== INSTANCED MOUNTAINS ===== */
 
+const cubeGeometry =
+new THREE.BoxGeometry(1,1,1);
+
+const mountainBlocks =
+new THREE.InstancedMesh(
+    cubeGeometry,
+    mountainStone,
+    150000
+);
+
+const snowBlocks =
+new THREE.InstancedMesh(
+    cubeGeometry,
+    snowCap,
+    50000
+);
+
+scene.add(mountainBlocks);
+scene.add(snowBlocks);
+
+const dummy =
+new THREE.Object3D();
+
+let mountainIndex = 0;
+let snowIndex = 0;
 
 /* ===== HUGE MOUNTAIN GENERATOR ===== */
 
@@ -1513,29 +1539,30 @@ function megaMountain(cx,cz,radius,height){
 
                 for(let y=0;y<h;y++){
 
-                    const block =
-                    new THREE.Mesh(
+                   dummy.position.set(
+    cx + x,
+    y,
+    cz + z
+);
 
-                        new THREE.BoxGeometry(
-                            1,1,1
-                        ),
+dummy.updateMatrix();
 
-                        y > height*0.8
-                        ? snowCap
-                        : mountainStone
+if(y > height * 0.8){
 
-                    );
+    snowBlocks.setMatrixAt(
+        snowIndex++,
+        dummy.matrix
+    );
 
-                    block.position.set(
-                        cx+x,
-                        y,
-                        cz+z
-                    );
+}
+else{
 
-                    block.castShadow = true;
-                    block.receiveShadow = true;
+    mountainBlocks.setMatrixAt(
+        mountainIndex++,
+        dummy.matrix
+    );
 
-                    scene.add(block);
+}
 
                 }
 
@@ -1559,7 +1586,11 @@ megaMountain(0,-95,35,50);
 megaMountain(-40,80,25,38);
 
 megaMountain(70,70,22,36);
+mountainBlocks.count = mountainIndex;
+snowBlocks.count = snowIndex;
 
+mountainBlocks.instanceMatrix.needsUpdate = true;
+snowBlocks.instanceMatrix.needsUpdate = true;
 
 
 /* ===== GIANT PINE TREES ===== */
