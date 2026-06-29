@@ -268,7 +268,165 @@ ground.rotation.x =
 ground.receiveShadow = true;
 
 scene.add(ground);
+/* ====================================
+FILE 3B PART 1
+VILLAGERS + ANIMALS
+==================================== */
 
+const villagers = [];
+const animals = [];
+
+
+/* ===== VILLAGER ===== */
+
+function createVillager(x,z){
+
+    const material =
+    new THREE.MeshLambertMaterial({
+        map:villagerTexture
+    });
+
+    const body =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            1,
+            2,
+            1
+        ),
+
+        material
+    );
+
+    body.position.set(
+        x,
+        1,
+        z
+    );
+
+    body.castShadow = true;
+
+    scene.add(body);
+
+    villagers.push(body);
+}
+
+
+/* ===== COW ===== */
+
+function createCow(x,z){
+
+    const material =
+    new THREE.MeshLambertMaterial({
+        map:cowTexture
+    });
+
+    const body =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            1.5,
+            1,
+            1
+        ),
+
+        material
+    );
+
+    body.position.set(
+        x,
+        0.5,
+        z
+    );
+
+    body.castShadow = true;
+
+    scene.add(body);
+
+    animals.push(body);
+}
+
+
+/* ===== PIG ===== */
+
+function createPig(x,z){
+
+    const material =
+    new THREE.MeshLambertMaterial({
+        map:pigTexture
+    });
+
+    const body =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            1.2,
+            0.8,
+            1
+        ),
+
+        material
+    );
+
+    body.position.set(
+        x,
+        0.4,
+        z
+    );
+
+    body.castShadow = true;
+
+    scene.add(body);
+
+    animals.push(body);
+}
+
+
+/* ===== SHEEP ===== */
+
+function createSheep(x,z){
+
+    const material =
+    new THREE.MeshLambertMaterial({
+        map:sheepTexture
+    });
+
+    const body =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            1.3,
+            1,
+            1
+        ),
+
+        material
+    );
+
+    body.position.set(
+        x,
+        0.5,
+        z
+    );
+
+    body.castShadow = true;
+
+    scene.add(body);
+
+    animals.push(body);
+}
+
+
+/* ===== SPAWN ===== */
+
+createVillager(5,5);
+createVillager(-5,8);
+
+createCow(10,10);
+createPig(-10,10);
+createSheep(0,15);
+
+console.log("FILE 3B PART 1 LOADED");
 
 /* ================= ANIMATE ================= */
 
