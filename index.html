@@ -109,8 +109,8 @@ sun.position.set(80,120,50);
 
 sun.castShadow = true;
 
-sun.shadow.mapSize.width = 4096;
-sun.shadow.mapSize.height = 4096;
+sun.shadow.mapSize.width = 1024;
+sun.shadow.mapSize.height = 1024;
 
 scene.add(sun);
 
@@ -162,10 +162,8 @@ new THREE.MeshLambertMaterial({
 color:0x4CAF50
 });
 
-for(let x=-100;x<100;x++){
-
-    for(let z=-100;z<100;z++){
-
+for(let x=-40;x<40;x++){
+    for(let z=-40;z<40;z++){
         const block =
         new THREE.Mesh(
 
@@ -255,10 +253,8 @@ function createMountain(cx, cz, radius, height){
     }
 }
 
-createMountain(-60,-60,20,18);
-createMountain(60,-50,18,16);
-createMountain(0,-80,25,22);
-
+createMountain(-35,-35,10,8);
+createMountain(35,-30,8,7);
 
 
 /* ================= RIVER ================= */
@@ -353,7 +349,7 @@ function giantPine(x,z){
 }
 
 
-for(let i=0;i<40;i++){
+for(let i=0;i<15;i++){
 
     giantPine(
 
