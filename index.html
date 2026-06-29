@@ -2125,12 +2125,14 @@ function villageWell(x,z){
     for(let i=-2;i<=2;i++){
 
         for(let j=-2;j<=2;j++){
-
+const stoneMaterial = new THREE.MeshLambertMaterial({
+    color: 0x888888
+});
             const block = new THREE.Mesh(
 
                 new THREE.BoxGeometry(1,1,1),
 
-                stoneMat
+                stoneMaterialerial
 
             );
 
