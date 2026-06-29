@@ -285,34 +285,135 @@ const animals = [];
 
 function createVillager(x,z){
 
-    const material =
+    const villager =
+    new THREE.Group();
+
+    const skin =
     new THREE.MeshLambertMaterial({
-        map:villagerTexture
+        color:0x4F6D4A
     });
+
+    const face =
+    new THREE.MeshLambertMaterial({
+        color:0xA87F6D
+    });
+
+
+    /* HEAD */
+
+    const head =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            0.9,
+            0.9,
+            0.9
+        ),
+
+        face
+    );
+
+    head.position.y = 2.4;
+
+    villager.add(head);
+
+
+    /* NOSE */
+
+    const nose =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            0.18,
+            0.3,
+            0.18
+        ),
+
+        face
+    );
+
+    nose.position.set(
+        0,
+        2.25,
+        0.5
+    );
+
+    villager.add(nose);
+
+
+    /* BODY */
 
     const body =
     new THREE.Mesh(
 
         new THREE.BoxGeometry(
             1,
-            2,
-            1
+            1.2,
+            0.7
         ),
 
-        material
+        skin
     );
 
-    body.position.set(
+    body.position.y = 1.4;
+
+    villager.add(body);
+
+
+    /* LEFT LEG */
+
+    const leg1 =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            0.25,
+            0.8,
+            0.25
+        ),
+
+        new THREE.MeshLambertMaterial({
+            color:0x4A2B20
+        })
+    );
+
+    leg1.position.set(
+        -0.2,
+        0.4,
+        0
+    );
+
+    villager.add(leg1);
+
+
+    /* RIGHT LEG */
+
+    const leg2 =
+    leg1.clone();
+
+    leg2.position.x = 0.2;
+
+    villager.add(leg2);
+
+
+    villager.position.set(
         x,
-        1,
+        0,
         z
     );
 
-    body.castShadow = true;
+    villager.traverse(o=>{
 
-    scene.add(body);
+        if(o.isMesh){
 
-    villagers.push(body);
+            o.castShadow = true;
+
+        }
+
+    });
+
+    scene.add(villager);
+
+    villagers.push(villager);
 }
 
 
