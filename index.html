@@ -288,15 +288,15 @@ function createVillager(x,z){
     const villager =
     new THREE.Group();
 
-    const skin =
-    new THREE.MeshLambertMaterial({
-        color:0x4F6D4A
-    });
+  const skin =
+new THREE.MeshLambertMaterial({
+    map: villagerTexture
+});
 
-    const face =
-    new THREE.MeshLambertMaterial({
-        color:0xA87F6D
-    });
+  const face =
+new THREE.MeshLambertMaterial({
+    map: villagerTexture
+});
 
 
     /* HEAD */
