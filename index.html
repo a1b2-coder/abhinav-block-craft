@@ -896,26 +896,23 @@ function key(x, y, z){
     return `${x},${y},${z}`;
 }
 
+const worldData = new Map();
+
 function placeBlock(x, y, z, material){
 
-    const block = new THREE.Mesh(
-        new THREE.BoxGeometry(1,1,1),
-        material
-    );
+    worldData.set(
 
-    block.position.set(x, y, z);
-
-    block.castShadow = true;
-    block.receiveShadow = true;
-
-    scene.add(block);
-
-    worldBlocks.set(
         key(x,y,z),
-        block
+
+        {
+            x,
+            y,
+            z,
+            material
+        }
+
     );
 
-    return block;
 }
 
 
