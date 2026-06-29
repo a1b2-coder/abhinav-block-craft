@@ -2397,6 +2397,33 @@ function generateChunk(cx, cz){
 }
 
 function updateChunks(){
+    function cleanupChunks(){
+
+    const pcx =
+        Math.floor(player.x / CHUNK_SIZE);
+
+    const pcz =
+        Math.floor(player.z / CHUNK_SIZE);
+
+    chunkMeshes.forEach((group,key)=>{
+
+        const [cx,cz] =
+            key.split(",").map(Number);
+
+        if(
+            Math.abs(cx-pcx) > RENDER_DISTANCE+1 ||
+            Math.abs(cz-pcz) > RENDER_DISTANCE+1
+        ){
+
+            scene.remove(group);
+
+            chunkMeshes.delete(key);
+
+        }
+
+    });
+
+}
 
     const pcx =
         Math.floor(player.x / CHUNK_SIZE);
@@ -2479,17 +2506,20 @@ if(player.y < 2){
     }
 
 
-    camera.position.set(
-        player.x,
-        player.y,
-        player.z
-    );
+  camera.position.set(
+    player.x,
+    player.y,
+    player.z
+);
 
 updateChunks();
-    renderer.render(
-        scene,
-        camera
-    );
+
+cleanupChunks();
+
+renderer.render(
+    scene,
+    camera
+);
 
 }
 
