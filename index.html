@@ -1722,14 +1722,26 @@ function createBed(x,y,z){
         color:0xffffff
     });
 
+    const bedBase = new THREE.Mesh(
+        new THREE.BoxGeometry(2,0.4,1),
+        redMat
+    );
+
+    bedBase.position.set(x,0.2,z);
+
+    scene.add(bedBase);
+
+
     const pillow = new THREE.Mesh(
-        new THREE.BoxGeometry(1,0.25,0.5),
+        new THREE.BoxGeometry(0.6,0.3,1),
         whiteMat
     );
 
-    pillow.position.set(x,y+0.4,z-0.25);
+    pillow.position.set(x-0.7,0.45,z);
 
     scene.add(pillow);
+
+}
 
     const bed = new THREE.Mesh(
         new THREE.BoxGeometry(1,0.25,1.5),
