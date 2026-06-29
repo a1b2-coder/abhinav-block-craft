@@ -2211,6 +2211,97 @@ villageWell(10,8);
 
 
 console.log("PART 2B LOADED");
+    /* ==========================================
+PART 2C
+VILLAGERS + ANIMALS + CAMPFIRE
+PASTE BELOW:
+console.log("PART 2B LOADED");
+========================================== */
+
+function makeVillager(x,z){
+
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(1,2,1),
+        new THREE.MeshLambertMaterial({
+            color:0x8B4513
+        })
+    );
+
+    body.position.set(x,1,z);
+
+    body.castShadow = false;
+
+    scene.add(body);
+
+    villagers.push({
+        mesh: body,
+        dir: Math.random()*Math.PI*2
+    });
+}
+
+function makeAnimal(x,z,color){
+
+    const animal = new THREE.Mesh(
+        new THREE.BoxGeometry(1.5,1,1),
+        new THREE.MeshLambertMaterial({
+            color: color
+        })
+    );
+
+    animal.position.set(x,0.5,z);
+
+    scene.add(animal);
+
+    animals.push({
+        mesh: animal,
+        dir: Math.random()*Math.PI*2
+    });
+}
+
+
+/* ===== SPAWN VILLAGERS ===== */
+
+makeVillager(-30,-8);
+makeVillager(-15,-8);
+makeVillager(0,-8);
+makeVillager(15,-8);
+makeVillager(30,-8);
+makeVillager(45,-8);
+
+
+/* ===== COWS ===== */
+
+makeAnimal(-40,15,0x222222);
+makeAnimal(-35,18,0x333333);
+makeAnimal(-38,22,0x444444);
+
+
+/* ===== PIGS ===== */
+
+makeAnimal(35,18,0xff99aa);
+makeAnimal(38,22,0xff88aa);
+
+
+/* ===== SHEEP ===== */
+
+makeAnimal(20,30,0xffffff);
+makeAnimal(25,32,0xeeeeee);
+
+
+/* ===== CAMPFIRE ===== */
+
+const fire = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.8,0.8,0.3,8),
+    new THREE.MeshLambertMaterial({
+        color:0xff6600
+    })
+);
+
+fire.position.set(10,0.2,12);
+
+scene.add(fire);
+
+console.log("PART 2C LOADED");
 /* ================= ANIMATE ================= */
 
 function animate(){
