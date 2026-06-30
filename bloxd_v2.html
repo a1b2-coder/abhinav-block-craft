@@ -153,7 +153,32 @@ function animate(){
     requestAnimationFrame(
         animate
     );
+// WASD movement
 
+if(keys["w"]) player.z -= player.speed;
+
+if(keys["s"]) player.z += player.speed;
+
+if(keys["a"]) player.x -= player.speed;
+
+if(keys["d"]) player.x += player.speed;
+
+
+// Camera follows player
+
+camera.position.set(
+    player.x,
+    player.y,
+    player.z
+);
+
+// Look forward
+
+camera.lookAt(
+    player.x,
+    player.y,
+    player.z - 10
+);
     renderer.render(
         scene,
         camera
