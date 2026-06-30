@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ABHINAV BLOCK CRAFT V2</title>
+
+    <style>
+        body{
+            margin:0;
+            overflow:hidden;
+            background:#87CEEB;
+        }
+
+        #crosshair{
+            position:fixed;
+            left:50%;
+            top:50%;
+            transform:translate(-50%,-50%);
+            color:white;
+            font-size:40px;
+            user-select:none;
+            z-index:1000;
+        }
+
+        #loading{
+            position:fixed;
+            top:20px;
+            left:20px;
+            color:white;
+            font-family:Arial;
+            font-size:24px;
+            z-index:1000;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="loading">
+ABHINAV BLOCK CRAFT V2
+</div>
+
+<div id="crosshair">+</div>
+
+<script type="module">
+
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const scene = new THREE.Scene();
+
+scene.background =
+new THREE.Color(0x87CEEB);
+
+const camera =
+new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
+
+const renderer =
+new THREE.WebGLRenderer({
+    antialias:true
+});
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+document.body.appendChild(
+renderer.domElement
+);
+
+const light =
+new THREE.DirectionalLight(
+0xffffff,
+2
+);
+
+light.position.set(
+50,
+100,
+50
+);
+
+scene.add(light);
+
+scene.add(
+new THREE.AmbientLight(
+0xffffff,
+1
+)
+);
+
+const ground =
+new THREE.Mesh(
+    new THREE.BoxGeometry(100,1,100),
+
+    new THREE.MeshLambertMaterial({
+        color:0x55aa55
+    })
+);
+
+ground.position.y = -1;
+
+scene.add(ground);
+
+camera.position.set(
+0,
+5,
+10
+);
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
